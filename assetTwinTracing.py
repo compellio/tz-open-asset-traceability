@@ -46,7 +46,7 @@ def test():
     scenario.verify(c1.get_asset(hash_1) == "end_point_1")
     c1.register_state(record_1).run(valid = False)
     c1.register_state(record_2).run(valid = True)
-
+    scenario.verify(c1.get_asset(hash_2) == "end_point_1")
 
     sp.add_compilation_target("assetTwinTracing",
         AssetTwinTracing()

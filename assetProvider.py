@@ -71,7 +71,7 @@ def test():
     scenario.verify(c1.get_asset_provider(asset_provider_uid_1).domain == "example.org")
     c1.create_asset_provider(record_1).run(valid = False)
     c1.create_asset_provider(record_2).run(valid = True)
-
+    scenario.verify(c1.get_asset_provider(asset_provider_uid_2).domain == "example.org")
 
     sp.add_compilation_target("assetProviderRepository",
         AssetProviderRepository()

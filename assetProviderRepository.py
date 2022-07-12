@@ -6,11 +6,19 @@ class AssetProviderRepository(sp.Contract):
     def __init__(self, data_contract):
         self.init_type(
             sp.TRecord(
-                data_contract = sp.TAddress
+                data_contract = sp.TAddress,
+                provider_statuses = sp.TBigMap(
+                    sp.TNat,
+                    sp.TString
+                ),
             )
         )
         self.init(
-            data_contract = data_contract
+            data_contract = data_contract,
+            provider_statuses = sp.big_map({
+                1: "active",
+                2: "deprecated"
+            }),
         )
 
     ###########
@@ -60,6 +68,7 @@ class AssetProviderRepository(sp.Contract):
         data_schema = sp.TRecord(
             provider_did = sp.TString,
             provider_data = sp.TString,
+            status = sp.TNat,
             creator_wallet_address = sp.TAddress,
         )
 
@@ -70,11 +79,100 @@ class AssetProviderRepository(sp.Contract):
         params = sp.record(
             provider_did = provider_did,
             provider_data = provider_data,
+            status = 1,
             creator_wallet_address = sp.source,
         )
 
         # Calling the Storage contract with the parameters we defined
         sp.transfer(params, sp.mutez(0), data_contract)
+
+    @sp.entry_point
+    def set_provider_active(self, parameters):
+        # Defining the parameters' types
+        sp.set_type(parameters.provider_did, sp.TString)
+
+        # Update is allowed only from owner
+        owner_address = self.get_provider_owner_address(parameters.provider_did)
+        sp.verify(self.verify_owner_source_address(
+            sp.record(
+                owner_address = owner_address,
+            )
+        ), message = "Incorrect owner")
+
+        # Defining the data expected by the Storage contract
+        contract_data = sp.TRecord(provider_did = sp.TString, status = sp.TNat)
+
+        # Defining the Storage contract itself and its entry point for the call
+        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_status").open_some()
+
+        # Defining the parameters that will be passed to the Storage contract
+        params = sp.record(
+            provider_did = parameters.provider_did,
+            status = 1
+        )
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(params, sp.mutez(0), storage_contract)
+
+    @sp.entry_point
+    def set_provider_deprecated(self, parameters):
+        # Defining the parameters' types
+        sp.set_type(parameters.provider_did, sp.TString)
+
+        # Update is allowed only from owner
+        owner_address = self.get_provider_owner_address(parameters.provider_did)
+        sp.verify(self.verify_owner_source_address(
+            sp.record(
+                owner_address = owner_address,
+            )
+        ), message = "Incorrect owner")
+
+        # Defining the data expected by the Storage contract
+        contract_data = sp.TRecord(provider_did = sp.TString, status = sp.TNat)
+
+        # Defining the Storage contract itself and its entry point for the call
+        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_status").open_some()
+
+        # Defining the parameters that will be passed to the Storage contract
+        params = sp.record(
+            provider_did = parameters.provider_did,
+            status = 2
+        )
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(params, sp.mutez(0), storage_contract)
+
+    @sp.entry_point
+    def set_provider_status(self, parameters):
+        # Defining the parameters' types
+        sp.set_type(parameters.provider_did, sp.TString)
+        sp.set_type(parameters.status, sp.TNat)
+
+        # Update is allowed only from owner
+        owner_address = self.get_provider_owner_address(parameters.provider_did)
+        sp.verify(self.verify_owner_source_address(
+            sp.record(
+                owner_address = owner_address,
+            )
+        ), message = "Incorrect owner")
+
+        # Defining the data expected by the Storage contract
+        contract_data = sp.TRecord(provider_did = sp.TString, status = sp.TNat)
+
+        # Defining the Storage contract itself and its entry point for the call
+        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_status").open_some()
+
+        # Verify status ID exists
+        sp.verify(self.data.provider_statuses.contains(parameters.status), message = "Incorrect status")
+
+        # Defining the parameters that will be passed to the Storage contract
+        params = sp.record(
+            provider_did = parameters.provider_did,
+            status = parameters.status
+        )
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(params, sp.mutez(0), storage_contract)
 
     @sp.onchain_view()
     def get_asset_provider(self, provider_did):
@@ -89,6 +187,7 @@ class AssetProviderRepository(sp.Contract):
             t = sp.TRecord(
                 provider_did = sp.TString,
                 provider_data = sp.TString,
+                status = sp.TNat,
                 creator_wallet_address = sp.TAddress,
             )
         ).open_some("Invalid view");
@@ -96,6 +195,7 @@ class AssetProviderRepository(sp.Contract):
         # Format result
         result_provider = sp.record(
             provider_data = provider.provider_data,
+            status = self.data.provider_statuses[provider.status]
         )
 
         # Calling the Storage contract with the parameters we defined

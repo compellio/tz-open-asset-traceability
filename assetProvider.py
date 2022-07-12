@@ -11,6 +11,7 @@ class AssetProvider(sp.Contract):
                     sp.TRecord(
                         provider_did = sp.TString,
                         provider_data = sp.TString,
+                        status = sp.TNat,
                         creator_wallet_address = sp.TAddress,
                     )
                 ),
@@ -23,6 +24,19 @@ class AssetProvider(sp.Contract):
     @sp.entry_point
     def create_asset_provider(self, parameters):
         self.data.asset_providers[parameters.provider_did] = parameters
+
+    @sp.entry_point
+    def change_status(self, parameters):
+        # Defining the parameters' types
+        sp.set_type(parameters.provider_did, sp.TString)
+        sp.set_type(parameters.status, sp.TNat)
+
+        issuer_data = self.data.asset_providers[parameters.provider_did]
+        
+        with sp.modify_record(issuer_data, "data") as data:
+            data.status = parameters.status
+
+        self.data.asset_providers[parameters.provider_did] = issuer_data
 
     @sp.onchain_view()
     def get_asset_provider(self, provider_did):

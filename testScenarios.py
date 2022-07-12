@@ -50,7 +50,10 @@ def test():
 
     scenario += asset_twin_tracing
 
-    # assetTwin
+    # Asset Provider Testing
+
+    scenario.h3("Asset Provider Testing")
+    scenario.h4("Asset Provider Creation")
 
     asset_provider_data_A = "asset_provider_data_A"
     asset_provider_data_B = "asset_provider_data_B"
@@ -58,21 +61,51 @@ def test():
     provider_did_1 = "86a6c8f7-dc31-46ba-98fc-58bea40fc28d"
     provider_did_2 = "7f6fd42a-1927-4dd1-b32a-e87f4890d77a"
 
-    record_1 = sp.record(
+    asset_provider_1 = sp.record(
         provider_did = provider_did_1,
         provider_data = asset_provider_data_A
     )
 
-    record_2 = sp.record(
+    asset_provider_2 = sp.record(
         provider_did = provider_did_2,
         provider_data = asset_provider_data_B
     )
 
-    asset_provider_repo.create_asset_provider(record_1).run(valid = True, sender = operator_A_address)
+    asset_provider_repo.create_asset_provider(asset_provider_1).run(valid = True, sender = operator_A_address)
     scenario.verify(asset_provider_repo.get_asset_provider(provider_did_1).provider_data == asset_provider_data_A)
-    asset_provider_repo.create_asset_provider(record_1).run(valid = False, sender = operator_B_address)
-    asset_provider_repo.create_asset_provider(record_2).run(valid = True, sender = operator_B_address)
+    asset_provider_repo.create_asset_provider(asset_provider_1).run(valid = False, sender = operator_B_address)
+    asset_provider_repo.create_asset_provider(asset_provider_2).run(valid = True, sender = operator_B_address)
     scenario.verify(asset_provider_repo.get_asset_provider(provider_did_2).provider_data == asset_provider_data_B)
+
+    scenario.h4("Asset Provider Status Change")
+
+    asset_provider_status_valid = sp.record(
+        provider_did = provider_did_1,
+        status = 1
+    )
+
+    asset_status_invalid_status = sp.record(
+        provider_did = provider_did_2,
+        status = 9999
+    )
+
+    asset_status_invalid_provider = sp.record(
+        provider_did = "non_existing_did",
+        status = 1
+    )
+
+    asset_provider_repo.set_provider_deprecated(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
+    scenario.verify(asset_provider_repo.get_asset_provider(provider_did_1).status == "deprecated")
+    asset_provider_repo.set_provider_active(asset_provider_status_valid).run(valid = False, sender = operator_B_address)
+    asset_provider_repo.set_provider_status(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
+    scenario.verify(asset_provider_repo.get_asset_provider(provider_did_1).status == "active")
+    asset_provider_repo.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address)
+    asset_provider_repo.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address)
+
+
+    # Asset Twin Testing
+
+    scenario.h3("Asset Twin Testing")
 
     hash_1 = "efb583d376b19d92d81e75bea335768d2b5cc9d60460c182cb6e66e8031b1aea"
     hash_2 = "fc2c0c139d5b71c45a339f91a81961904ec564d62ca3727e0679bef4193c7c7a"

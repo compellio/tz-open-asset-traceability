@@ -46,14 +46,18 @@ def test():
 
     scenario.h3("Asset Twin Tracing")
 
-    asset_twin_tracing = ASSET_TWIN_TRACING.AssetTwinTracing()
+    asset_twin_tracing = ASSET_TWIN_TRACING.AssetTwinTracing(asset_provider.address)
 
     scenario += asset_twin_tracing
 
+    # Testing 
+
+    scenario.h1("Testing")
+
     # Asset Provider Testing
 
-    scenario.h3("Asset Provider Testing")
-    scenario.h4("Asset Provider Creation")
+    scenario.h2("Asset Provider Testing")
+    scenario.h3("Asset Provider Creation")
 
     asset_provider_data_A = "asset_provider_data_A"
     asset_provider_data_B = "asset_provider_data_B"
@@ -77,7 +81,7 @@ def test():
     asset_provider_repo.create_asset_provider(asset_provider_2).run(valid = True, sender = operator_B_address)
     scenario.verify(asset_provider_repo.get_asset_provider(provider_did_2).provider_data == asset_provider_data_B)
 
-    scenario.h4("Asset Provider Status Change")
+    scenario.h3("Asset Provider Status Change")
 
     asset_provider_status_valid = sp.record(
         provider_did = provider_did_1,
@@ -102,35 +106,34 @@ def test():
     asset_provider_repo.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address)
     asset_provider_repo.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address)
 
-
     # Asset Twin Testing
 
-    scenario.h3("Asset Twin Testing")
+    scenario.h2("Asset Twin Testing")
 
     hash_1 = "efb583d376b19d92d81e75bea335768d2b5cc9d60460c182cb6e66e8031b1aea"
     hash_2 = "fc2c0c139d5b71c45a339f91a81961904ec564d62ca3727e0679bef4193c7c7a"
     
     hash_1_provider_1 = sp.record(
         anchor_hash = hash_1,
-        provider_id = "provider_id_1",
+        provider_did = provider_did_1,
         repo_end_point = "end_point_1"
     )
 
     hash_1_provider_2 = sp.record(
         anchor_hash = hash_1,
-        provider_id = "provider_id_2",
+        provider_did = provider_did_2,
         repo_end_point = "end_point_1"
     )
     
     hash_1_provider_invalid = sp.record(
         anchor_hash = hash_1,
-        provider_id = "provider_id_invalid",
+        provider_did = "provider_did_invalid",
         repo_end_point = "end_point_1"
     )
 
     hash_2_provider_1 = sp.record(
         anchor_hash = hash_2,
-        provider_id = "provider_id_1",
+        provider_did = provider_did_1,
         repo_end_point = "end_point_2"
     )
 

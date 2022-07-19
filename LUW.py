@@ -7,96 +7,81 @@ class LUW(sp.Contract):
         self.init_type(
             sp.TRecord(
                 luw_map = sp.TBigMap(
-                    sp.TString,
+                    sp.TNat,
                     sp.TRecord(
-                        originator = sp.TAddress,
-                        last_state_key = sp.TNat,
+                        creator_wallet_address = sp.TAddress,
+                        provider_id = sp.TString,
+                        service_endpoint = sp.TString,
                         state_history = sp.TMap(
                             sp.TNat,
                             sp.TNat
                         ),
                     )
                 ),
-                states = sp.TBigMap(
-                    sp.TNat,
-                    sp.TString
-                ),
+                luw_last_id = sp.TNat,
             )
         )
         self.init(
             luw_map = sp.big_map(),
-            states = sp.big_map({
-                1: "active",
-                2: "prepare_to_commit",
-                3: "commited",
-                4: "aborted"
-            }),
+            luw_last_id = 0,
         )
 
     @sp.entry_point
-    def create_luw_contract(self, luw_uid):
-        sp.set_type(luw_uid, sp.TString)
-
-        sp.verify(self.data.luw_map.contains(luw_uid) == sp.bool(False), message = "LUW with UID " + luw_uid + " already exists")
+    def add(self, provider_id, luw_service_endpoint):
+        sp.set_type(provider_id, sp.TString)
+        sp.set_type(luw_service_endpoint, sp.TString)
 
         new_luw_record = sp.record(
-            originator = sp.source,
-            last_state_key = 0,
-            state_history = {0: 1}
+            creator_wallet_address = sp.source,
+            provider_id = provider_id,
+            service_endpoint = luw_service_endpoint,
+            state_history = {1: 1},
         )
 
-        self.data.luw_map[luw_uid] = new_luw_record
+        self.data.luw_map[self.data.luw_last_id] = new_luw_record
+        self.data.luw_last_id += 1
 
     @sp.entry_point
-    def change_luw_state(self, luw_uid, state_id):
-        sp.set_type(luw_uid, sp.TString)
+    def add_state(self, luw_id, state_id):
+        sp.set_type(luw_id, sp.TNat)
         sp.set_type(state_id, sp.TNat)
 
-        sp.verify(self.data.states.contains(state_id), message = "Incorrect state ID")
-        sp.verify(self.data.luw_map.contains(luw_uid), message = "LUW with UID " + luw_uid + " does not exist")
+        sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
 
-        luw = self.data.luw_map[luw_uid]
+        luw = self.data.luw_map[luw_id]
 
-        sp.verify(luw.originator == sp.source, message = "Owner address of LUW could not be verified")
-
-        luw_new_state_key = luw.last_state_key + 1
+        luw_new_state_key = sp.len(luw.state_history) + 1
         luw_state_history = luw.state_history
 
         luw_state_history[luw_new_state_key] = state_id
 
         new_luw_record = sp.record(
-            originator = luw.originator,
-            last_state_key = luw_new_state_key,
+            creator_wallet_address = luw.creator_wallet_address,
+            provider_id = luw.provider_id,
+            service_endpoint = luw.service_endpoint,
             state_history = luw_state_history
         )
 
-        self.data.luw_map[luw_uid] = new_luw_record
+        self.data.luw_map[luw_id] = new_luw_record
 
     @sp.onchain_view()
-    def get_luw(self, luw_uid):
-        sp.result(self.data.luw_map[luw_uid])
+    def fetch(self, luw_id):
+        sp.result(self.data.luw_map[luw_id])
+
+    @sp.onchain_view()
+    def get_active_state(self, luw_id):
+        sp.set_type(luw_id, sp.TNat)
+        
+        luw = self.data.luw_map[luw_id]
+        last_state = luw.state_history[sp.len(luw.state_history)]
+        sp.result(last_state)
+
+    @sp.onchain_view()
+    def get_luw_owner_address(self, luw_id):
+        sp.result(self.data.luw_map[luw_id].creator_wallet_address)
 
 @sp.add_test(name = "LUW")
 def test():
-    scenario = sp.test_scenario()
-
-    luw_uid_1 = "86a6c8f7-dc31-46ba-98fc-58bea40fc28d"
-    luw_uid_2 = "7f6fd42a-1927-4dd1-b32a-e87f4890d77a"
-
-    address_1 = sp.test_account("address_1").address
-    address_2 = sp.test_account("address_2").address
-    
-    c1 = LUW()
-
-    scenario += c1
-
-    c1.create_luw_contract(luw_uid_1).run(valid = True, sender = address_1)
-    c1.create_luw_contract(luw_uid_1).run(valid = False, sender = address_1)
-    c1.create_luw_contract(luw_uid_2).run(valid = True, sender = address_1)
-    c1.change_luw_state(sp.record(luw_uid = luw_uid_1, state_id = 2)).run(valid = True, sender = address_1)
-    c1.change_luw_state(sp.record(luw_uid = luw_uid_1, state_id = 999)).run(valid = False, sender = address_1)
-    c1.change_luw_state(sp.record(luw_uid = luw_uid_1, state_id = 3)).run(valid = False, sender = address_2)
-
     sp.add_compilation_target("luw",
         LUW()
     )

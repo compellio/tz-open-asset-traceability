@@ -7,6 +7,9 @@ def test():
     ASSET_PROVIDER = sp.io.import_stored_contract("assetProvider.py")
     ASSET_PROVIDER_REPOSITORY = sp.io.import_stored_contract("assetProviderRepository.py")
     ASSET_TWIN_TRACING = sp.io.import_stored_contract("assetTwinTracing.py")
+    LUW = sp.io.import_stored_contract("LUW.py")
+    LUW_REPOSITORY = sp.io.import_stored_contract("LUWRepository.py")
+
     certifier = sp.test_account("Certifier")
     operator_A = sp.test_account("Operator_A")
     operator_B = sp.test_account("Operator_B")
@@ -46,9 +49,29 @@ def test():
 
     scenario.h3("Asset Twin Tracing")
 
-    asset_twin_tracing = ASSET_TWIN_TRACING.AssetTwinTracing(asset_provider.address)
+    asset_twin_tracing = ASSET_TWIN_TRACING.AssetTwinTracing(
+        asset_provider.address
+    )
 
     scenario += asset_twin_tracing
+
+    # LUW Contract Instantiation
+
+    scenario.h3("LUW")
+
+    luw_contract = LUW.LUW()
+
+    scenario += luw_contract
+
+    # LUW Repository Contract Instantiation
+
+    scenario.h3("LUW Repository")
+
+    luw_repo_contract = LUW_REPOSITORY.LUWRepository(
+        luw_contract.address
+    )
+
+    scenario += luw_repo_contract
 
     # Testing 
 
@@ -144,3 +167,38 @@ def test():
     asset_twin_tracing.register(hash_2_provider_1).run(valid = True, sender = operator_B_address)
     scenario.verify(asset_twin_tracing.fetch_asset_twin(hash_2_provider_1).creator_wallet_address == operator_B_address)
     scenario.verify(sp.is_failing(asset_twin_tracing.fetch_asset_twin(hash_1_provider_invalid)))
+
+    # LUW Testing 
+
+    scenario.h2("LUW Testing")
+
+    luw_record = sp.record(
+        provider_id = "provider_id",
+        luw_service_endpoint = "luw_service_endpoint",
+    )
+
+    luw_repo_contract.create_luw(luw_record).run(valid = True, sender = operator_A_address)
+    scenario.verify(luw_repo_contract.fetch_luw(0).creator_wallet_address == operator_A_address)
+    scenario.verify(luw_repo_contract.get_active_state(0) == "active")
+
+    luw_valid_new_state_record = sp.record(
+        luw_id = 0,
+        state_id = 2,
+    )
+
+    luw_new_state_invalid_luw_id_record = sp.record(
+        luw_id = 999,
+        state_id = 2,
+    )
+
+    luw_new_state_invalid_state_id_record = sp.record(
+        luw_id = 0,
+        state_id = 999,
+    )
+
+    luw_repo_contract.change_luw_state(luw_valid_new_state_record).run(valid = False, sender = operator_B_address)
+    luw_repo_contract.change_luw_state(luw_valid_new_state_record).run(valid = True, sender = operator_A_address)
+    luw_repo_contract.change_luw_state(luw_new_state_invalid_luw_id_record).run(valid = False, sender = operator_A_address)
+    luw_repo_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address)
+    scenario.verify(luw_repo_contract.get_active_state(0) == "prepare_to_commit")
+    

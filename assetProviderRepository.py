@@ -17,7 +17,8 @@ class AssetProviderRepository(sp.Contract):
             data_contract = data_contract,
             provider_statuses = sp.big_map({
                 1: "active",
-                2: "deprecated"
+                2: "deprecated",
+                3: "in_conflict",
             }),
         )
 
@@ -57,13 +58,17 @@ class AssetProviderRepository(sp.Contract):
 
         return provider_owner_address
 
+    #############################
+    # Repo Entry points / Views #
+    #############################
+
     @sp.entry_point
     def create_asset_provider(self, provider_did, provider_data):
         sp.set_type(provider_did, sp.TString)
         sp.set_type(provider_data, sp.TString)
 
         # Check if provider does not exist, does not allow add call otherwise
-        sp.verify(~self.check_provider_exists(provider_did), message = "Provider did already exists")
+        sp.verify(self.check_provider_exists(provider_did) == sp.bool(False), message = "Provider did already exists")
 
         data_schema = sp.TRecord(
             provider_did = sp.TString,

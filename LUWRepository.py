@@ -157,5 +157,5 @@ class LUWRepository(sp.Contract):
 @sp.add_test(name = "LUWRepository")
 def test():
     sp.add_compilation_target("luwRepository",
-        LUWRepository(sp.address("KT1MWPUKoU4FUVr1nBA4cwjMSoSsxqE3x9kc"))
+        LUWRepository(sp.address("KT1_contract_address"))
     )

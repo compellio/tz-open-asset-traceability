@@ -68,7 +68,7 @@ class AssetTwinTracing(sp.Contract):
         anchor_hash = parameters.anchor_hash
         provider_did = parameters.provider_did
         
-        sp.verify(~self.data.assets[anchor_hash].contains(provider_did) == sp.bool(False), message = "Hash " + anchor_hash + " does not exist for provider " + provider_did)
+        sp.verify(self.data.assets[anchor_hash].contains(provider_did), message = "Hash " + anchor_hash + " does not exist for provider " + provider_did)
         
         sp.result(self.data.assets[anchor_hash][provider_did])
 

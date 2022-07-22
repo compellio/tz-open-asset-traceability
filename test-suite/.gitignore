@@ -1,0 +1,6 @@
+.parcel-cache/*
+.idea/*
+output/*
+dist/*
+/node_modules/
+/.parcel-cache/

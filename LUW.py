@@ -11,9 +11,13 @@ class LUW(sp.Contract):
                     sp.TRecord(
                         creator_wallet_address = sp.TAddress,
                         provider_id = sp.TString,
-                        service_endpoint = sp.TString,
+                        luw_service_endpoint = sp.TAddress,
                         state_history = sp.TMap(
                             sp.TNat,
+                            sp.TNat
+                        ),
+                        repository_endpoints = sp.TMap(
+                            sp.TString,
                             sp.TNat
                         ),
                     )
@@ -29,13 +33,14 @@ class LUW(sp.Contract):
     @sp.entry_point
     def add(self, provider_id, luw_service_endpoint):
         sp.set_type(provider_id, sp.TString)
-        sp.set_type(luw_service_endpoint, sp.TString)
+        sp.set_type(luw_service_endpoint, sp.TAddress)
 
         new_luw_record = sp.record(
             creator_wallet_address = sp.source,
             provider_id = provider_id,
-            service_endpoint = luw_service_endpoint,
+            luw_service_endpoint = luw_service_endpoint,
             state_history = {1: 1},
+            repository_endpoints = {},
         )
 
         self.data.luw_map[self.data.luw_last_id] = new_luw_record
@@ -58,8 +63,35 @@ class LUW(sp.Contract):
         new_luw_record = sp.record(
             creator_wallet_address = luw.creator_wallet_address,
             provider_id = luw.provider_id,
-            service_endpoint = luw.service_endpoint,
-            state_history = luw_state_history
+            luw_service_endpoint = luw.luw_service_endpoint,
+            state_history = luw_state_history,
+            repository_endpoints = luw.repository_endpoints
+        )
+
+        self.data.luw_map[luw_id] = new_luw_record
+
+    @sp.entry_point
+    def add_repository(self, luw_id, repository_id, state_id):
+        sp.set_type(luw_id, sp.TNat)
+        sp.set_type(repository_id, sp.TString)
+        sp.set_type(state_id, sp.TNat)
+
+        sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
+
+        luw = self.data.luw_map[luw_id]
+
+        luw_repository_endpoints = luw.repository_endpoints
+
+        sp.verify(luw_repository_endpoints.contains(repository_id) == False, message = "Repository ID already exists")
+
+        luw_repository_endpoints[repository_id] = state_id
+
+        new_luw_record = sp.record(
+            creator_wallet_address = luw.creator_wallet_address,
+            provider_id = luw.provider_id,
+            luw_service_endpoint = luw.luw_service_endpoint,
+            state_history = luw.state_history,
+            repository_endpoints = luw_repository_endpoints
         )
 
         self.data.luw_map[luw_id] = new_luw_record

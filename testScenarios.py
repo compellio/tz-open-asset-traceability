@@ -13,10 +13,12 @@ def test():
     certifier = sp.test_account("Certifier")
     operator_A = sp.test_account("Operator_A")
     operator_B = sp.test_account("Operator_B")
+    offchain_coordinator = sp.test_account("Offchain_Coordinator")
 
     certifier_address = certifier.address
     operator_A_address = operator_A.address
     operator_B_address = operator_B.address
+    offchain_coordinator_address = offchain_coordinator.address
 
     scenario = sp.test_scenario()
     scenario.h1("Preparation")
@@ -85,47 +87,47 @@ def test():
     asset_provider_data_A = "asset_provider_data_A"
     asset_provider_data_B = "asset_provider_data_B"
 
-    provider_did_1 = "86a6c8f7-dc31-46ba-98fc-58bea40fc28d"
-    provider_did_2 = "7f6fd42a-1927-4dd1-b32a-e87f4890d77a"
+    provider_id_1 = "86a6c8f7-dc31-46ba-98fc-58bea40fc28d"
+    provider_id_2 = "7f6fd42a-1927-4dd1-b32a-e87f4890d77a"
 
     asset_provider_1 = sp.record(
-        provider_did = provider_did_1,
+        provider_id = provider_id_1,
         provider_data = asset_provider_data_A
     )
 
     asset_provider_2 = sp.record(
-        provider_did = provider_did_2,
+        provider_id = provider_id_2,
         provider_data = asset_provider_data_B
     )
 
     asset_provider_repo.create_asset_provider(asset_provider_1).run(valid = True, sender = operator_A_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_did_1).provider_data == asset_provider_data_A)
+    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).provider_data == asset_provider_data_A)
     asset_provider_repo.create_asset_provider(asset_provider_1).run(valid = False, sender = operator_B_address)
     asset_provider_repo.create_asset_provider(asset_provider_2).run(valid = True, sender = operator_B_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_did_2).provider_data == asset_provider_data_B)
+    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_2).provider_data == asset_provider_data_B)
 
     scenario.h3("Asset Provider Status Change")
 
     asset_provider_status_valid = sp.record(
-        provider_did = provider_did_1,
+        provider_id = provider_id_1,
         status = 1
     )
 
     asset_status_invalid_status = sp.record(
-        provider_did = provider_did_2,
+        provider_id = provider_id_2,
         status = 9999
     )
 
     asset_status_invalid_provider = sp.record(
-        provider_did = "non_existing_did",
+        provider_id = "non_existing_did",
         status = 1
     )
 
     asset_provider_repo.set_provider_deprecated(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_did_1).status == "deprecated")
+    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).status == "deprecated")
     asset_provider_repo.set_provider_active(asset_provider_status_valid).run(valid = False, sender = operator_B_address)
     asset_provider_repo.set_provider_status(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_did_1).status == "active")
+    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).status == "active")
     asset_provider_repo.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address)
     asset_provider_repo.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address)
 
@@ -138,25 +140,25 @@ def test():
     
     hash_1_provider_1 = sp.record(
         anchor_hash = hash_1,
-        provider_did = provider_did_1,
+        provider_id = provider_id_1,
         repo_end_point = "end_point_1"
     )
 
     hash_1_provider_2 = sp.record(
         anchor_hash = hash_1,
-        provider_did = provider_did_2,
+        provider_id = provider_id_2,
         repo_end_point = "end_point_1"
     )
     
     hash_1_provider_invalid = sp.record(
         anchor_hash = hash_1,
-        provider_did = "provider_did_invalid",
+        provider_id = "provider_id_invalid",
         repo_end_point = "end_point_1"
     )
 
     hash_2_provider_1 = sp.record(
         anchor_hash = hash_2,
-        provider_did = provider_did_1,
+        provider_id = provider_id_1,
         repo_end_point = "end_point_2"
     )
 
@@ -174,12 +176,34 @@ def test():
 
     luw_record = sp.record(
         provider_id = "provider_id",
-        luw_service_endpoint = "luw_service_endpoint",
+        luw_service_endpoint = offchain_coordinator_address,
     )
 
     luw_repo_contract.create_luw(luw_record).run(valid = True, sender = operator_A_address)
     scenario.verify(luw_repo_contract.fetch_luw(0).creator_wallet_address == operator_A_address)
     scenario.verify(luw_repo_contract.get_active_state(0) == "active")
+
+    repository_id_1 = "01add8a4-7302-490b-be57-cec2cd02f8da"
+    repository_id_2 = "db161792-d5a9-434b-b0fc-5359f6d6460b"
+
+    repository_add_valid_1 = sp.record(
+        luw_id = 0,
+        repository_id = repository_id_1,
+    )
+
+    repository_add_valid_2 = sp.record(
+        luw_id = 0,
+        repository_id = repository_id_2,
+    )
+
+    repository_add_invalid_luw = sp.record(
+        luw_id = 999,
+        repository_id = repository_id_1,
+    )
+
+    luw_repo_contract.add_repository(repository_add_valid_1).run(valid = True, sender = operator_A_address)
+    luw_repo_contract.add_repository(repository_add_valid_1).run(valid = False, sender = operator_A_address)
+    luw_repo_contract.add_repository(repository_add_valid_2).run(valid = False, sender = operator_B_address)
 
     luw_valid_new_state_record = sp.record(
         luw_id = 0,

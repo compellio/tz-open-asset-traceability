@@ -174,6 +174,88 @@ class AssetProviderRepository(sp.Contract):
         # Calling the Storage contract with the parameters we defined
         sp.transfer(params, sp.mutez(0), storage_contract)
 
+    @sp.entry_point
+    def set_provider_data(self, parameters):
+        # Defining the parameters' types
+        sp.set_type(parameters.provider_id, sp.TString)
+        sp.set_type(parameters.provider_data, sp.TString)
+
+        # Check if provider exists, does not allow call otherwise
+        sp.verify(self.verify_provider_exists(parameters.provider_id), message = "Provider did does not exist")
+
+        # Update is allowed only from owner
+        owner_address = self.get_provider_owner_address(parameters.provider_id)
+        sp.verify(self.verify_owner_source_address(
+            sp.record(
+                owner_address = owner_address,
+            )
+        ), message = "Non-matching owner address")
+
+        # Defining the data expected by the Storage contract
+        contract_data = sp.TRecord(provider_id = sp.TString, provider_data = sp.TString)
+
+        # Defining the Storage contract itself and its entry point for the call
+        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_data").open_some()
+
+        # Defining the parameters that will be passed to the Storage contract
+        params = sp.record(
+            provider_id = parameters.provider_id,
+            provider_data = parameters.provider_data,
+        )
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(params, sp.mutez(0), storage_contract)
+
+    @sp.entry_point
+    def set_provider_owner(self, parameters):
+        # Defining the parameters' types
+        sp.set_type(parameters.provider_id, sp.TString)
+        sp.set_type(parameters.new_owner_address, sp.TAddress)
+
+        # Update is allowed only from owner
+        owner_address = self.get_provider_owner_address(parameters.provider_id)
+        sp.verify(self.verify_owner_source_address(
+            sp.record(
+                owner_address = owner_address,
+            )
+        ), message = "Non-matching owner address")
+
+        # Defining the data expected by the Storage contract
+        contract_data = sp.TRecord(provider_id = sp.TString, new_owner_address = sp.TAddress)
+
+        # Defining the Storage contract itself and its entry point for the call
+        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_owner").open_some()
+
+        # Defining the parameters that will be passed to the Storage contract
+        params = sp.record(
+            provider_id = parameters.provider_id,
+            new_owner_address = parameters.new_owner_address
+        )
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(params, sp.mutez(0), storage_contract)
+
+    @sp.onchain_view()
+    def get_asset_providers(self):
+        # Defining the parameters' types
+        providers = sp.view(
+            "get_asset_providers",
+            self.data.data_contract,
+            sp.none,
+            t = sp.TBigMap(
+                sp.TString,
+                sp.TRecord(
+                    provider_id = sp.TString,
+                    provider_data = sp.TString,
+                    status = sp.TNat,
+                    creator_wallet_address = sp.TAddress,
+                )
+            )
+        ).open_some("Invalid view");
+
+        # Calling the Storage contract with the parameters we defined
+        sp.result(providers)
+
     @sp.onchain_view()
     def get_asset_provider(self, provider_id):
         # Defining the parameters' types
@@ -195,7 +277,8 @@ class AssetProviderRepository(sp.Contract):
         # Format result
         result_provider = sp.record(
             provider_data = provider.provider_data,
-            status = self.data.provider_statuses[provider.status]
+            status = self.data.provider_statuses[provider.status],
+            creator_wallet_address = provider.creator_wallet_address,
         )
 
         # Calling the Storage contract with the parameters we defined

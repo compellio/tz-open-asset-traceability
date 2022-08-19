@@ -31,12 +31,48 @@ class AssetProvider(sp.Contract):
         sp.set_type(parameters.provider_id, sp.TString)
         sp.set_type(parameters.status, sp.TNat)
 
-        issuer_data = self.data.asset_providers[parameters.provider_id]
+        provider_data = self.data.asset_providers[parameters.provider_id]
         
-        with sp.modify_record(issuer_data, "data") as data:
+        with sp.modify_record(provider_data, "data") as data:
             data.status = parameters.status
 
-        self.data.asset_providers[parameters.provider_id] = issuer_data
+        self.data.asset_providers[parameters.provider_id] = provider_data
+
+    @sp.entry_point
+    def change_data(self, parameters):
+        # Defining the parameters' types
+        sp.set_type(parameters.provider_id, sp.TString)
+        sp.set_type(parameters.provider_data, sp.TString)
+
+        # Verifying whether the caller address is our Registry contract
+        # sp.verify(self.data.logic_contract_address == sp.sender, message = "Incorrect caller")
+
+        provider_data = self.data.asset_providers[parameters.provider_id]
+        
+        with sp.modify_record(provider_data, "data") as data:
+            data.provider_data = parameters.provider_data
+
+        self.data.asset_providers[parameters.provider_id] = provider_data
+
+    @sp.entry_point
+    def change_owner(self, parameters):
+        # Defining the parameters' types
+        sp.set_type(parameters.provider_id, sp.TString)
+        sp.set_type(parameters.new_owner_address, sp.TAddress)
+
+        # Verifying whether the caller address is our Registry contract
+        # sp.verify(self.data.logic_contract_address == sp.sender, message = "Incorrect caller")
+
+        provider_data = self.data.asset_providers[parameters.provider_id]
+        
+        with sp.modify_record(provider_data, "data") as data:
+            data.creator_wallet_address = parameters.new_owner_address
+
+        self.data.asset_providers[parameters.provider_id] = provider_data
+
+    @sp.onchain_view()
+    def get_asset_providers(self):
+        sp.result(self.data.asset_providers)
 
     @sp.onchain_view()
     def get_asset_provider(self, provider_id):

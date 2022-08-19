@@ -106,6 +106,31 @@ def test():
     asset_provider_repo.create_asset_provider(asset_provider_2).run(valid = True, sender = operator_B_address)
     scenario.verify(asset_provider_repo.get_asset_provider(provider_id_2).provider_data == asset_provider_data_B)
 
+    change_asset_provider_1_data = sp.record(
+        provider_id = provider_id_1,
+        provider_data = asset_provider_data_B
+    )
+    
+    asset_provider_repo.set_provider_data(change_asset_provider_1_data).run(valid = False, sender = operator_B_address)
+    asset_provider_repo.set_provider_data(change_asset_provider_1_data).run(valid = True, sender = operator_A_address)
+    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).provider_data == asset_provider_data_B)
+
+    change_asset_provider_1_owner_A = sp.record(
+        provider_id = provider_id_1,
+        new_owner_address = operator_A_address
+    )
+
+    change_asset_provider_1_owner_B = sp.record(
+        provider_id = provider_id_1,
+        new_owner_address = operator_B_address
+    )
+
+    asset_provider_repo.set_provider_owner(change_asset_provider_1_owner_B).run(valid = False, sender = operator_B_address)
+    asset_provider_repo.set_provider_owner(change_asset_provider_1_owner_B).run(valid = True, sender = operator_A_address)
+    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).creator_wallet_address == operator_B_address)
+    asset_provider_repo.set_provider_owner(change_asset_provider_1_owner_A).run(valid = True, sender = operator_B_address)
+    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).creator_wallet_address == operator_A_address)
+
     scenario.h3("Asset Provider Status Change")
 
     asset_provider_status_valid = sp.record(
@@ -230,14 +255,13 @@ def test():
         state_id = 2
     )
 
-    test = sp.record(
+    update_luw_all_repo_states = sp.record(
         luw_id = 0,
-        repository_id = repository_id_1,
-        state_id = 2
+        state_id = 3
     )
 
     luw_repo_contract.change_repository_state(repository_change_state_valid).run(valid = True, sender = operator_A_address)
-    scenario.verify(luw_repo_contract.get_luw_repository_state(repository_change_state_valid) == "ready")
+    scenario.verify(luw_repo_contract.get_luw_repository_state(repository_add_valid_1) == "ready")
     luw_repo_contract.change_repository_state(repository_change_state_valid).run(valid = False, sender = operator_B_address)
     luw_repo_contract.change_repository_state(repository_change_state_invalid_luw).run(valid = False, sender = operator_A_address)
     luw_repo_contract.change_repository_state(repository_change_state_invalid_state).run(valid = False, sender = operator_A_address)

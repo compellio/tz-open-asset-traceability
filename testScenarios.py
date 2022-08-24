@@ -220,9 +220,9 @@ def test():
         luw_service_endpoint = offchain_coordinator_address,
     )
 
-    luw_repo_contract.create_luw(luw_record).run(valid = True, sender = operator_A_address)
-    scenario.verify(luw_repo_contract.fetch_luw(0).creator_wallet_address == operator_A_address)
-    scenario.verify(luw_repo_contract.get_active_luw_state(0) == "active")
+    lambda_contract.create_luw(luw_record).run(valid = True, sender = operator_A_address)
+    scenario.verify(lambda_contract.fetch_luw(0).creator_wallet_address == operator_A_address)
+    scenario.verify(lambda_contract.get_active_luw_state(0) == "active")
 
     repository_id_1 = "01add8a4-7302-490b-be57-cec2cd02f8da"
     repository_id_2 = "db161792-d5a9-434b-b0fc-5359f6d6460b"
@@ -242,10 +242,10 @@ def test():
         repository_id = repository_id_1,
     )
 
-    luw_repo_contract.add_repository(repository_add_valid_1).run(valid = True, sender = operator_A_address)
-    luw_repo_contract.add_repository(repository_add_valid_1).run(valid = False, sender = operator_A_address)
-    luw_repo_contract.add_repository(repository_add_valid_2).run(valid = False, sender = operator_B_address)
-    luw_repo_contract.add_repository(repository_add_valid_2).run(valid = True, sender = operator_A_address)
+    lambda_contract.add_luw_repository(repository_add_valid_1).run(valid = True, sender = operator_A_address)
+    lambda_contract.add_luw_repository(repository_add_valid_1).run(valid = False, sender = operator_A_address)
+    lambda_contract.add_luw_repository(repository_add_valid_2).run(valid = False, sender = operator_B_address)
+    lambda_contract.add_luw_repository(repository_add_valid_2).run(valid = True, sender = operator_A_address)
 
     repository_change_state_valid = sp.record(
         luw_id = 0,
@@ -276,12 +276,12 @@ def test():
         state_id = 3
     )
 
-    luw_repo_contract.change_repository_state(repository_change_state_valid).run(valid = True, sender = operator_A_address)
-    scenario.verify(luw_repo_contract.get_luw_repository_state(repository_add_valid_1) == "ready")
-    luw_repo_contract.change_repository_state(repository_change_state_valid).run(valid = False, sender = operator_B_address)
-    luw_repo_contract.change_repository_state(repository_change_state_invalid_luw).run(valid = False, sender = operator_A_address)
-    luw_repo_contract.change_repository_state(repository_change_state_invalid_state).run(valid = False, sender = operator_A_address)
-    luw_repo_contract.change_repository_state(repository_change_state_invalid_repo).run(valid = False, sender = operator_A_address)
+    lambda_contract.change_luw_repository_state(repository_change_state_valid).run(valid = True, sender = operator_A_address)
+    scenario.verify(lambda_contract.get_luw_repository_state(repository_add_valid_1) == "ready")
+    lambda_contract.change_luw_repository_state(repository_change_state_valid).run(valid = False, sender = operator_B_address)
+    lambda_contract.change_luw_repository_state(repository_change_state_invalid_luw).run(valid = False, sender = operator_A_address)
+    lambda_contract.change_luw_repository_state(repository_change_state_invalid_state).run(valid = False, sender = operator_A_address)
+    lambda_contract.change_luw_repository_state(repository_change_state_invalid_repo).run(valid = False, sender = operator_A_address)
 
     luw_valid_new_state_record = sp.record(
         luw_id = 0,
@@ -298,9 +298,9 @@ def test():
         state_id = 999,
     )
 
-    luw_repo_contract.change_luw_state(luw_valid_new_state_record).run(valid = False, sender = operator_B_address)
-    luw_repo_contract.change_luw_state(luw_valid_new_state_record).run(valid = True, sender = operator_A_address)
-    luw_repo_contract.change_luw_state(luw_new_state_invalid_luw_id_record).run(valid = False, sender = operator_A_address)
-    luw_repo_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address)
-    scenario.verify(luw_repo_contract.get_active_luw_state(0) == "prepare_to_commit")
+    lambda_contract.change_luw_state(luw_valid_new_state_record).run(valid = False, sender = operator_B_address)
+    lambda_contract.change_luw_state(luw_valid_new_state_record).run(valid = True, sender = operator_A_address)
+    lambda_contract.change_luw_state(luw_new_state_invalid_luw_id_record).run(valid = False, sender = operator_A_address)
+    lambda_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address)
+    scenario.verify(lambda_contract.get_active_luw_state(0) == "prepare_to_commit")
     

@@ -154,6 +154,27 @@ class Registry(sp.Contract):
         sp.transfer(params, sp.mutez(0), logic_contract)
 
     @sp.onchain_view()
+    def get_asset_providers(self):
+        # Defining the parameters' types
+        providers = sp.view(
+            "get_asset_providers",
+            self.data.contracts.asset_provider_contract,
+            sp.none,
+            t = sp.TBigMap(
+                sp.TString,
+                sp.TRecord(
+                    provider_id = sp.TString,
+                    provider_data = sp.TString,
+                    status = sp.TNat,
+                    creator_wallet_address = sp.TAddress,
+                )
+            )
+        ).open_some("Invalid view");
+
+        # Calling the Storage contract with the parameters we defined
+        sp.result(providers)
+
+    @sp.onchain_view()
     def get_asset_provider(self, provider_id):
         # Defining the parameters' types
         sp.set_type(provider_id, sp.TString)
@@ -216,6 +237,148 @@ class Registry(sp.Contract):
         ).open_some("Invalid view");
         
         sp.result(asset_twin)
+
+    @sp.entry_point
+    def create_luw(self, provider_id, luw_service_endpoint):
+        sp.set_type(provider_id, sp.TString)
+        sp.set_type(luw_service_endpoint, sp.TAddress)
+
+        # Defining the data that we expect as a return from the Logic contract
+        data_schema = sp.TRecord(provider_id = sp.TString, luw_service_endpoint = sp.TAddress)
+
+        # Defining the Logic contract itself and its entry point for the call
+        luw_contract = sp.contract(data_schema, self.data.contracts.luw_contract, "create_luw").open_some()
+        
+        # Defining the parameters that will be passed to the Storage contract
+        params = sp.record(
+            provider_id = provider_id,
+            luw_service_endpoint = luw_service_endpoint
+        )
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(params, sp.mutez(0), luw_contract)
+
+    @sp.entry_point
+    def change_luw_state(self, luw_id, state_id):
+        sp.set_type(luw_id, sp.TNat)
+        sp.set_type(state_id, sp.TNat)
+
+        # Defining the data that we expect as a return from the Logic contract
+        data_schema = sp.TRecord(luw_id = sp.TNat, state_id = sp.TNat)
+
+        # Defining the Logic contract itself and its entry point for the call
+        luw_contract = sp.contract(data_schema, self.data.contracts.luw_contract, "change_luw_state").open_some()
+        
+        # Defining the parameters that will be passed to the Storage contract
+        params = sp.record(
+            luw_id = luw_id,
+            state_id = state_id
+        )
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(params, sp.mutez(0), luw_contract)
+
+    @sp.entry_point
+    def add_luw_repository(self, luw_id, repository_id):
+        sp.set_type(luw_id, sp.TNat)
+        sp.set_type(repository_id, sp.TString)
+
+        # Defining the data that we expect as a return from the Logic contract
+        data_schema = sp.TRecord(luw_id = sp.TNat, repository_id = sp.TString)
+
+        # Defining the Logic contract itself and its entry point for the call
+        luw_contract = sp.contract(data_schema, self.data.contracts.luw_contract, "add_repository").open_some()
+        
+        # Defining the parameters that will be passed to the Storage contract
+        params = sp.record(
+            luw_id = luw_id,
+            repository_id = repository_id,
+        )
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(params, sp.mutez(0), luw_contract)
+
+    @sp.entry_point
+    def change_luw_repository_state(self, luw_id, repository_id, state_id):
+        sp.set_type(luw_id, sp.TNat)
+        sp.set_type(repository_id, sp.TString)
+        sp.set_type(state_id, sp.TNat)
+
+        # Defining the data that we expect as a return from the Logic contract
+        data_schema = sp.TRecord(luw_id = sp.TNat, repository_id = sp.TString, state_id = sp.TNat)
+
+        # Defining the Logic contract itself and its entry point for the call
+        luw_contract = sp.contract(data_schema, self.data.contracts.luw_contract, "change_repository_state").open_some()
+        
+        # Defining the parameters that will be passed to the Storage contract
+        params = sp.record(
+            luw_id = luw_id,
+            repository_id = repository_id,
+            state_id = state_id
+        )
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(params, sp.mutez(0), luw_contract)
+
+    @sp.onchain_view()
+    def fetch_luw(self, luw_id):
+        # Defining the parameters' types
+        sp.set_type(luw_id, sp.TNat)
+        
+        # Defining the parameters' types
+        luw = sp.view(
+            "fetch_luw",
+            self.data.contracts.luw_contract,
+            luw_id,
+            t = sp.TRecord(
+                creator_wallet_address = sp.TAddress,
+                provider_id = sp.TString,
+                luw_service_endpoint = sp.TAddress,
+                state_history = sp.TMap(
+                    sp.TNat,
+                    sp.TNat
+                ),
+                repository_endpoints = sp.TMap(
+                    sp.TString,
+                    sp.TNat
+                ),
+            )
+        ).open_some("Invalid view");
+
+        sp.result(luw)
+
+    @sp.onchain_view()
+    def get_active_luw_state(self, luw_id):
+        # Defining the parameters' types
+        sp.set_type(luw_id, sp.TNat)
+        
+        # Defining the parameters' types
+        luw_last_state = sp.view(
+            "get_active_luw_state",
+            self.data.contracts.luw_contract,
+            luw_id,
+            t = sp.TString
+        ).open_some("Invalid view");
+
+        sp.result(luw_last_state)
+
+    @sp.onchain_view()
+    def get_luw_repository_state(self, params):
+        # Defining the parameters' types
+        sp.set_type(params.luw_id, sp.TNat)
+        sp.set_type(params.repository_id, sp.TString)
+        
+        repository_state = sp.view(
+            "get_luw_repository_state",
+            self.data.contracts.luw_contract,
+            sp.record(
+                luw_id = params.luw_id,
+                repository_id = params.repository_id,
+            ),
+            t = sp.TString
+        ).open_some("Invalid view");
+
+        sp.result(repository_state)
 
 @sp.add_test(name = "Registry")
 def test():

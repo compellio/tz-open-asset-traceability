@@ -33,8 +33,8 @@ The scenarios tested are be desribed seperately, per contract, as follows:
 | Set Asset Provider with ID A as Active with improper Owner (Operator B) | Failure | Improper Owner |
 | Set Asset Provider with ID A to Active Status with proper Owner (Operator A) | Success | - |
 | Verify Asset Provider status set to Active | Success | - |
-| Set Asset Provider with ID A to an improper Status with proper Owner (Operator A) | Improper Status ID | - |
-| Set Asset Provider with improper ID to Active Status with proper Owner (Operator A) | Improper Provider ID | - |
+| Set Asset Provider with ID A to an improper Status with proper Owner (Operator A) | Failure | Improper Status ID |
+| Set Asset Provider with improper ID to Active Status with proper Owner (Operator A) | Failure | Improper Provider ID |
 
 ### assetTwinTracing.py
 
@@ -49,7 +49,7 @@ The scenarios tested are be desribed seperately, per contract, as follows:
 | Register Asset Twin with Hash A and Provider B | Success | - |
 | Register Asset Twin with Hash B and Provider A | Success | - |
 | Verify Asset Twin creation with Hash B | Success | - |
-| Verify Failure of fetching an Asset Twin with valid Hash A and invalid Provider | Success | Asset Twin does not exist for invalid Provider |
+| Verify Failure of fetching an Asset Twin with valid Hash A and invalid Provider | Success | - |
 
 ### LUW.py
 

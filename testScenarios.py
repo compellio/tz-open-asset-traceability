@@ -9,6 +9,7 @@ def test():
     ASSET_TWIN_TRACING = sp.io.import_stored_contract("assetTwinTracing.py")
     LUW = sp.io.import_stored_contract("LUW.py")
     LUW_REPOSITORY = sp.io.import_stored_contract("LUWRepository.py")
+    LAMBDA = sp.io.import_stored_contract("registry.py")
 
     certifier = sp.test_account("Certifier")
     operator_A = sp.test_account("Operator_A")
@@ -47,7 +48,7 @@ def test():
 
     scenario += asset_provider_repo
 
-    # Asset Provider Repository Contract Instantiation
+    # Asset Twin  Contract Instantiation
 
     scenario.h3("Asset Twin Tracing")
 
@@ -75,6 +76,21 @@ def test():
 
     scenario += luw_repo_contract
 
+    # Lambda Contract Instantiation
+
+    scenario.h3("Lambda Contract")
+
+    lambda_contract = LAMBDA.Registry(
+        sp.record(
+            asset_provider_contract = asset_provider_repo.address,
+            asset_twin_contract = asset_twin_tracing.address,
+            luw_contract = luw_repo_contract.address,
+        ),
+        certifier_address
+    )
+
+    scenario += lambda_contract
+
     # Testing 
 
     scenario.h1("Testing")
@@ -100,20 +116,20 @@ def test():
         provider_data = asset_provider_data_B
     )
 
-    asset_provider_repo.create_asset_provider(asset_provider_1).run(valid = True, sender = operator_A_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).provider_data == asset_provider_data_A)
-    asset_provider_repo.create_asset_provider(asset_provider_1).run(valid = False, sender = operator_B_address)
-    asset_provider_repo.create_asset_provider(asset_provider_2).run(valid = True, sender = operator_B_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_2).provider_data == asset_provider_data_B)
+    lambda_contract.create_asset_provider(asset_provider_1).run(valid = True, sender = operator_A_address)
+    scenario.verify(lambda_contract.get_asset_provider(provider_id_1).provider_data == asset_provider_data_A)
+    lambda_contract.create_asset_provider(asset_provider_1).run(valid = False, sender = operator_B_address)
+    lambda_contract.create_asset_provider(asset_provider_2).run(valid = True, sender = operator_B_address)
+    scenario.verify(lambda_contract.get_asset_provider(provider_id_2).provider_data == asset_provider_data_B)
 
     change_asset_provider_1_data = sp.record(
         provider_id = provider_id_1,
         provider_data = asset_provider_data_B
     )
     
-    asset_provider_repo.set_provider_data(change_asset_provider_1_data).run(valid = False, sender = operator_B_address)
-    asset_provider_repo.set_provider_data(change_asset_provider_1_data).run(valid = True, sender = operator_A_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).provider_data == asset_provider_data_B)
+    lambda_contract.set_provider_data(change_asset_provider_1_data).run(valid = False, sender = operator_B_address)
+    lambda_contract.set_provider_data(change_asset_provider_1_data).run(valid = True, sender = operator_A_address)
+    scenario.verify(lambda_contract.get_asset_provider(provider_id_1).provider_data == asset_provider_data_B)
 
     change_asset_provider_1_owner_A = sp.record(
         provider_id = provider_id_1,
@@ -125,11 +141,11 @@ def test():
         new_owner_address = operator_B_address
     )
 
-    asset_provider_repo.set_provider_owner(change_asset_provider_1_owner_B).run(valid = False, sender = operator_B_address)
-    asset_provider_repo.set_provider_owner(change_asset_provider_1_owner_B).run(valid = True, sender = operator_A_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).creator_wallet_address == operator_B_address)
-    asset_provider_repo.set_provider_owner(change_asset_provider_1_owner_A).run(valid = True, sender = operator_B_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).creator_wallet_address == operator_A_address)
+    lambda_contract.set_provider_owner(change_asset_provider_1_owner_B).run(valid = False, sender = operator_B_address)
+    lambda_contract.set_provider_owner(change_asset_provider_1_owner_B).run(valid = True, sender = operator_A_address)
+    scenario.verify(lambda_contract.get_asset_provider(provider_id_1).creator_wallet_address == operator_B_address)
+    lambda_contract.set_provider_owner(change_asset_provider_1_owner_A).run(valid = True, sender = operator_B_address)
+    scenario.verify(lambda_contract.get_asset_provider(provider_id_1).creator_wallet_address == operator_A_address)
 
     scenario.h3("Asset Provider Status Change")
 
@@ -148,13 +164,13 @@ def test():
         status = 1
     )
 
-    asset_provider_repo.set_provider_deprecated(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).status == "deprecated")
-    asset_provider_repo.set_provider_active(asset_provider_status_valid).run(valid = False, sender = operator_B_address)
-    asset_provider_repo.set_provider_status(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
-    scenario.verify(asset_provider_repo.get_asset_provider(provider_id_1).status == "active")
-    asset_provider_repo.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address)
-    asset_provider_repo.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address)
+    lambda_contract.set_provider_deprecated(provider_id_1).run(valid = True, sender = operator_A_address)
+    scenario.verify(lambda_contract.get_asset_provider(provider_id_1).status == "deprecated")
+    lambda_contract.set_provider_active(provider_id_1).run(valid = False, sender = operator_B_address)
+    lambda_contract.set_provider_status(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
+    scenario.verify(lambda_contract.get_asset_provider(provider_id_1).status == "active")
+    lambda_contract.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address)
+    lambda_contract.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address)
 
     # Asset Twin Testing
 
@@ -187,13 +203,13 @@ def test():
         repo_end_point = "end_point_2"
     )
 
-    asset_twin_tracing.register(hash_1_provider_1).run(valid = True, sender = operator_A_address)
-    scenario.verify(asset_twin_tracing.fetch_asset_twin(hash_1_provider_1).creator_wallet_address == operator_A_address)
-    asset_twin_tracing.register(hash_1_provider_1).run(valid = False, sender = operator_B_address)
-    asset_twin_tracing.register(hash_1_provider_2).run(valid = True, sender = operator_A_address)
-    asset_twin_tracing.register(hash_2_provider_1).run(valid = True, sender = operator_B_address)
-    scenario.verify(asset_twin_tracing.fetch_asset_twin(hash_2_provider_1).creator_wallet_address == operator_B_address)
-    scenario.verify(sp.is_failing(asset_twin_tracing.fetch_asset_twin(hash_1_provider_invalid)))
+    lambda_contract.register_asset_twin(hash_1_provider_1).run(valid = True, sender = operator_A_address)
+    scenario.verify(lambda_contract.fetch_asset_twin(hash_1_provider_1).creator_wallet_address == operator_A_address)
+    lambda_contract.register_asset_twin(hash_1_provider_1).run(valid = False, sender = operator_B_address)
+    lambda_contract.register_asset_twin(hash_1_provider_2).run(valid = True, sender = operator_A_address)
+    lambda_contract.register_asset_twin(hash_2_provider_1).run(valid = True, sender = operator_B_address)
+    scenario.verify(lambda_contract.fetch_asset_twin(hash_2_provider_1).creator_wallet_address == operator_B_address)
+    scenario.verify(sp.is_failing(lambda_contract.fetch_asset_twin(hash_1_provider_invalid)))
 
     # LUW Testing 
 

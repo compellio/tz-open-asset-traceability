@@ -153,26 +153,26 @@ class Registry(sp.Contract):
         # Calling the Logic contract with the parameters we defined
         sp.transfer(params, sp.mutez(0), logic_contract)
 
-    @sp.onchain_view()
-    def get_asset_providers(self):
-        # Defining the parameters' types
-        providers = sp.view(
-            "get_asset_providers",
-            self.data.contracts.asset_provider_contract,
-            sp.none,
-            t = sp.TBigMap(
-                sp.TString,
-                sp.TRecord(
-                    provider_id = sp.TString,
-                    provider_data = sp.TString,
-                    status = sp.TNat,
-                    creator_wallet_address = sp.TAddress,
-                )
-            )
-        ).open_some("Invalid view");
+    # @sp.onchain_view()
+    # def get_asset_providers(self):
+    #     # Defining the parameters' types
+    #     providers = sp.view(
+    #         "get_asset_providers",
+    #         self.data.contracts.asset_provider_contract,
+    #         sp.none,
+    #         t = sp.TBigMap(
+    #             sp.TString,
+    #             sp.TRecord(
+    #                 provider_id = sp.TString,
+    #                 provider_data = sp.TString,
+    #                 status = sp.TNat,
+    #                 creator_wallet_address = sp.TAddress,
+    #             )
+    #         )
+    #     ).open_some("Invalid view");
 
-        # Calling the Storage contract with the parameters we defined
-        sp.result(providers)
+    #     # Calling the Storage contract with the parameters we defined
+    #     sp.result(providers)
 
     @sp.onchain_view()
     def get_asset_provider(self, provider_id):
@@ -386,10 +386,10 @@ def test():
     sp.add_compilation_target("registry",
         Registry(
             sp.record(
-                asset_provider_contract = 'KT1_provider_address',
-                asset_twin_contract = 'KT1_twin_address',
-                luw_contract = 'KT1_luw_address',
+                asset_provider_contract = sp.address('KT1GP5bMwLhtZPpvrzFfJMRuk4qzUAJtr7ti'),
+                asset_twin_contract = sp.address('KT1Xqffe6ea3tip7BnGFGmJfDZRzwdwopDQZ'),
+                luw_contract = sp.address('KT1XrwTjXnHiy9caM266pNRmZ7Vdk1G4Vt2f'),
             ),
-            sp.address('tz1_certifier_address')
+            sp.address('tz1WM1wDM4mdtD3qMiELJSgbB14ZryyHNu7P')
         )
     )

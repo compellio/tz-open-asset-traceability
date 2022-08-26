@@ -34,9 +34,9 @@
                                 aria-selected="false">Asset Providers</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link disabled" id="pills-luw-tab" data-bs-toggle="pill"
+                            <button class="nav-link" id="pills-luw-tab" data-bs-toggle="pill"
                                 data-bs-target="#pills-luw" type="button" role="tab"
-                                aria-controls="pills-luw" aria-selected="false">LUW - Under Construction</button>
+                                aria-controls="pills-luw" aria-selected="false">Logical Unit (of) Work</button>
                         </li>
                     </ul>
                 </div>
@@ -46,14 +46,8 @@
                     <label for="provider" class="form-label">Provider</label>
                     <input id="provider" type="text" class="form-control">
 
-                    <label for="assetTwinContractAddress" class="form-label">Asset Twin Contract Address</label>
-                    <input id="assetTwinContractAddress" type="text" class="form-control">
-
-                    <label for="assetProviderContractAddress" class="form-label">Asset Provider Contract Address</label>
-                    <input id="assetProviderContractAddress" type="text" class="form-control">
-
-                    <label for="LUWContractAddress" class="form-label">LUW Contract Address</label>
-                    <input id="LUWContractAddress" type="text" class="form-control">
+                    <label for="lambdaContractAddress" class="form-label">Lambda Contract Address</label>
+                    <input id="lambdaContractAddress" type="text" class="form-control">
                 </div>
             </div>
         </div>
@@ -65,18 +59,18 @@
                 <div class="tab-pane fade show active w-100" id="pills-asset-twin-tracing" role="tabpanel" aria-labelledby="pills-asset-twin-tracing-tab">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="title-bar mt-4">Register Asset Twin</h4>
+                            <h5 class="title-bar mt-4">Register Asset Twin</h5>
                             <input class="form-control mt-2" type="text" id="asset_twin_hash" placeholder="Anchor Hash"></input >
-                            <input class="form-control mt-2" type="text" id="asset_twin_provider_did" placeholder="Provider DID"></input >
+                            <input class="form-control mt-2" type="text" id="asset_twin_provider_id" placeholder="Provider ID"></input >
                             <input class="form-control mt-2" type="text" id="asset_twin_repo_endpoint" placeholder="Repository Endpoint"></input >
                             <a href="#" id="btn_register_asset_twin" class="btn btn-primary mt-2">Register</a>
 
                             <hr/> 
 
-                            <h4 class="title-bar mt-4">Fetch Asset Twin</h4>
+                            <h5 class="title-bar mt-4">Fetch Asset Twin</h5>
                             <div class="content-box">
                                 <input class="form-control mt-2" type="text" id="asset_twin_hash_get" placeholder="Anchor Hash" />
-                                <input class="form-control mt-2" type="text" id="asset_twin_provider_did_get" placeholder="Provider DID" />
+                                <input class="form-control mt-2" type="text" id="asset_twin_provider_id_get" placeholder="Provider ID" />
                                 <a href="#" id="btn_get_asset_twin" class="btn btn-primary mt-2">Fetch</a>
                             </div>
                         </div>
@@ -98,25 +92,25 @@
                                             data-bs-target="#pills-provider-status-update" type="button" role="tab" aria-controls="pills-provider-status-update"
                                             aria-selected="false">Provider Status Update</button>
                                     </li>
-                                    <!-- <li class="nav-item" role="presentation">
+                                    <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="pills-provider-owner-update-tab" data-bs-toggle="pill"
                                             data-bs-target="#pills-provider-owner-update" type="button" role="tab"
                                             aria-controls="pills-provider-owner-update" aria-selected="false">Provider Owner Update</button>
-                                    </li> -->
+                                    </li>
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="pills-provider-get-tab" data-bs-toggle="pill"
                                             data-bs-target="#pills-provider-get" type="button" role="tab"
                                             aria-controls="pills-provider-get" aria-selected="false">Get Provider</button>
                                     </li>
                                 </ul>
-                                <input class="form-control mt-2" type="text" id="provider_did" placeholder="Provider DID" />
+                                <input class="form-control mt-2" type="text" id="provider_id" placeholder="Provider ID" />
                                 
                                 <div class="tab-content" id="pills-tabContent">
                                     <div class="tab-pane fade show active" id="pills-provider-data-update" role="tabpanel" aria-labelledby="pills-home-tab">
-                                        <h5 class="title-bar mt-4">Create Provider</h4>
+                                        <h5 class="title-bar mt-4">Create Provider</h5>
                                         <textarea class="form-control mt-2 w-100" type="textarea" id="provider_data" placeholder="Provider Data" rows="3"></textarea >
                                         <a href="#" id="btn_provider_issue" class="btn btn-primary mt-2">Create Provider</a>
-                                        <!-- <a href="#" id="btn_provider_update_data" class="btn btn-primary mt-2">Update Data</a> -->
+                                        <a href="#" id="btn_provider_update_data" class="btn btn-primary mt-2">Update Data</a>
                                     </div>
                                     <div class="tab-pane fade" id="pills-provider-status-update" role="tabpanel" aria-labelledby="pills-profile-tab">
                                         <h5 class="title-bar mt-4">Update Provider Status</h5>
@@ -127,11 +121,11 @@
                                             <a href="#" id="btn_provider_set_status" class="btn btn-primary">Set Status</a>
                                         </div>
                                     </div>
-                                    <!-- <div class="tab-pane fade" id="pills-provider-owner-update" role="tabpanel" aria-labelledby="pills-contact-tab">
+                                    <div class="tab-pane fade" id="pills-provider-owner-update" role="tabpanel" aria-labelledby="pills-contact-tab">
                                         <h5 class="title-bar mt-4">Update Provider Owner</h5>
                                         <input class="form-control" type="text" id="provider_owner" placeholder="Provider Owner Address" />
                                         <a href="#" id="btn_provider_owner_update" class="btn btn-primary mt-2">Update</a>
-                                    </div> -->
+                                    </div>
                                     <div class="tab-pane fade" id="pills-provider-get" role="tabpanel" aria-labelledby="pills-contact-tab">
                                         <h5 class="title-bar mt-4">Get Provider</h5>
                                         <a href="#" id="btn_provider_get" class="btn btn-primary mt-2">Get</a>
@@ -144,21 +138,75 @@
                 <div class="tab-pane fade w-100" id="pills-luw" role="tabpanel" aria-labelledby="pills-luw-tab">
                     <div class="card">
                         <div class="card-body">
-                            <!-- <h4 class="title-bar mt-4">Issuer-Schema Binding</h4>
-                            <input class="form-control mt-2" type="text" id="binding_issuer_did" placeholder="Issuer DID" />
-                            <input class="form-control mt-2" type="number" id="binding_schema_id" placeholder="Schema ID" />
-                            <h5 class="title-bar mt-4">Binding</h5>
-                            <div class="d-flex mt-2" style="gap: 0.25rem;">
-                                <a href="#" id="btn_bind" class="btn btn-primary">Bind</a>
-                                <a href="#" id="btn_check_binding" class="btn btn-primary">Inspect Binding</a>
+                            <h4 class="title-bar mt-4">LUW</h4>
+                            <div class="content-box">
+                                <ul class="nav nav-pills ms-auto" id="pills-tab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="pills-create-luw-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-create-luw" type="button" role="tab" aria-controls="pills-create-luw"
+                                            aria-selected="true">LUW Creation</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="pills-luw-state-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-luw-state" type="button" role="tab" aria-controls="pills-luw-state"
+                                            aria-selected="true">LUW State</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="pills-luw-repositories-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-luw-repositories" type="button" role="tab" aria-controls="pills-luw-repositories"
+                                            aria-selected="true">LUW Repositories</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="pills-luw-repository-state-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-luw-repository-state" type="button" role="tab" aria-controls="pills-luw-repository-state"
+                                            aria-selected="true">LUW Repository States</button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="pills-fetch-luw-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-fetch-luw" type="button" role="tab" aria-controls="pills-fetch-luw"
+                                            aria-selected="true">Fetch LUW</button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="pills-create-luw" role="tabpanel" aria-labelledby="pills-home-tab">
+                                        <h5 class="title-bar mt-4 w-full">Create LUW</h5>
+                                        <input class="form-control mt-2" type="text" id="create_luw_provider" placeholder="Provider ID" />
+                                        <input class="form-control mt-2" type="text" id="create_luw_endpoint" placeholder="Service Endpoint" />
+                                        <a href="#" id="btn_create_luw" class="btn btn-primary mt-2">Create LUW</a>
+                                    </div>
+                                    <div class="tab-pane fade show" id="pills-luw-state" role="tabpanel" aria-labelledby="pills-home-tab">
+                                        <h5 class="title-bar mt-4 w-full">Change LUW State</h5>
+                                        <input class="form-control mt-2" type="number" id="change_luw_state_id" placeholder="LUW ID" />
+                                        <a href="#" id="btn_state_luw_active" class="btn btn-primary mt-2">Active</a>
+                                        <a href="#" id="btn_state_luw_prepare" class="btn btn-primary mt-2">Prepare To Commit</a>
+                                        <a href="#" id="btn_state_luw_commit" class="btn btn-primary mt-2">Commit</a>
+                                        <a href="#" id="btn_state_luw_abort" class="btn btn-primary mt-2">Abort</a>
+                                    </div>
+                                    <div class="tab-pane fade show" id="pills-luw-repositories" role="tabpanel" aria-labelledby="pills-home-tab">
+                                        <h5 class="title-bar mt-4 w-full">LUW Repositories</h5>
+                                        <input class="form-control mt-2" type="number" id="add_luw_repository_id" placeholder="LUW ID" />
+                                        <input class="form-control mt-2" type="text" id="add_luw_repository_repo_id" placeholder="Repository ID" />
+
+                                        <a href="#" id="btn_add_repository" class="btn btn-primary mt-2">Add Repository</a>
+                                    </div>
+                                    <div class="tab-pane fade show" id="pills-luw-repository-state" role="tabpanel" aria-labelledby="pills-home-tab">
+                                        <h5 class="title-bar mt-4 w-full">Change LUW Repository States</h5>
+                                        <input class="form-control mt-2" type="number" id="change_luw_repo_state_id" placeholder="LUW ID" />
+                                        <input class="form-control mt-2" type="text" id="change_luw_repo_state_repo_id" placeholder="Repository ID" />
+
+                                        <a href="#" id="btn_state_luw_repo_open" class="btn btn-primary mt-2">Open</a>
+                                        <a href="#" id="btn_state_luw_repo_ready" class="btn btn-primary mt-2">Ready</a>
+                                        <a href="#" id="btn_state_luw_repo_commited" class="btn btn-primary mt-2">Commited</a>
+                                        <a href="#" id="btn_state_luw_repo_rollbacked" class="btn btn-primary mt-2">Rollbacked</a>
+                                    </div>
+                                    <div class="tab-pane fade show" id="pills-fetch-luw" role="tabpanel" aria-labelledby="pills-home-tab">
+                                        <h5 class="title-bar mt-4 w-full">Fetch LUW</h5>
+                                        <input class="form-control mt-2" type="number" id="fetch_luw_id" placeholder="LUW ID" />
+
+                                        <a href="#" id="btn_fetch_luw" class="btn btn-primary mt-2">Fetch LUW</a>
+                                    </div>
+                                </div>
                             </div>
-                            <h5 class="title-bar mt-4">Issuer-Schema Binding Status Update</h5>
-                            <div class="d-flex mt-2" style="gap: 0.25rem;">
-                                <a href="#" id="btn_binding_activate" class="btn btn-primary">Set Active</a>
-                                <a href="#" id="btn_binding_deactivate" class="btn btn-primary">Set Deprecated</a>
-                                <input class="form-control w-25" type="number" id="binding_status_id" placeholder="Status ID" />
-                                <a href="#" id="btn_binding_set_status" class="btn btn-primary">Set Status</a>
-                            </div> -->
                         </div>
                     </div>
                 </div>

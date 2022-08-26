@@ -235,26 +235,26 @@ class AssetProviderRepository(sp.Contract):
         # Calling the Storage contract with the parameters we defined
         sp.transfer(params, sp.mutez(0), storage_contract)
 
-    @sp.onchain_view()
-    def get_asset_providers(self):
-        # Defining the parameters' types
-        providers = sp.view(
-            "get_asset_providers",
-            self.data.data_contract,
-            sp.none,
-            t = sp.TBigMap(
-                sp.TString,
-                sp.TRecord(
-                    provider_id = sp.TString,
-                    provider_data = sp.TString,
-                    status = sp.TNat,
-                    creator_wallet_address = sp.TAddress,
-                )
-            )
-        ).open_some("Invalid view");
+    # @sp.onchain_view()
+    # def get_asset_providers(self):
+    #     # Defining the parameters' types
+    #     providers = sp.view(
+    #         "get_asset_providers",
+    #         self.data.data_contract,
+    #         sp.none,
+    #         t = sp.TBigMap(
+    #             sp.TString,
+    #             sp.TRecord(
+    #                 provider_id = sp.TString,
+    #                 provider_data = sp.TString,
+    #                 status = sp.TNat,
+    #                 creator_wallet_address = sp.TAddress,
+    #             )
+    #         )
+    #     ).open_some("Invalid view");
 
-        # Calling the Storage contract with the parameters we defined
-        sp.result(providers)
+    #     # Calling the Storage contract with the parameters we defined
+    #     sp.result(providers)
 
     @sp.onchain_view()
     def get_asset_provider(self, provider_id):

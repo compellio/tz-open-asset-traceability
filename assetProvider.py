@@ -70,9 +70,9 @@ class AssetProvider(sp.Contract):
 
         self.data.asset_providers[parameters.provider_id] = provider_data
 
-    @sp.onchain_view()
-    def get_asset_providers(self):
-        sp.result(self.data.asset_providers)
+    # @sp.onchain_view()
+    # def get_asset_providers(self):
+    #     sp.result(self.data.asset_providers)
 
     @sp.onchain_view()
     def get_asset_provider(self, provider_id):

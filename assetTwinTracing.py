@@ -3,7 +3,7 @@
 import smartpy as sp
 
 class AssetTwinTracing(sp.Contract):
-    def __init__(self, asset_provider_contract):
+    def __init__(self):
         self.init_type(
             sp.TRecord(
                 assets = sp.TBigMap(
@@ -16,12 +16,12 @@ class AssetTwinTracing(sp.Contract):
                         )
                     )
                 ),
-                asset_provider_contract = sp.TAddress,
+                # asset_provider_contract = sp.TAddress,
             )
         )
         self.init(
             assets = sp.big_map(),
-            asset_provider_contract = asset_provider_contract,
+            # asset_provider_contract = asset_provider_contract,
         )
 
     ###########
@@ -29,15 +29,15 @@ class AssetTwinTracing(sp.Contract):
     ###########
 
     # Verify Provider existence
-    def verify_provider_exists(self, provider_id):
-        provider_existance = sp.view(
-            "verify_provider_exists",
-            self.data.asset_provider_contract,
-            provider_id,
-            t = sp.TBool
-        ).open_some("Invalid view");
+    # def verify_provider_exists(self, provider_id):
+    #     provider_existance = sp.view(
+    #         "verify_provider_exists",
+    #         self.data.asset_provider_contract,
+    #         provider_id,
+    #         t = sp.TBool
+    #     ).open_some("Invalid view");
 
-        return provider_existance
+    #     return provider_existance
 
     @sp.entry_point
     def register(self, anchor_hash, provider_id, repo_end_point):
@@ -45,7 +45,7 @@ class AssetTwinTracing(sp.Contract):
         sp.set_type(provider_id, sp.TString)
         sp.set_type(repo_end_point, sp.TString)
 
-        sp.verify(self.verify_provider_exists(provider_id) == sp.bool(True), message = "Provider " + provider_id + " does not exist")
+        # sp.verify(self.verify_provider_exists(provider_id) == sp.bool(True), message = "Provider " + provider_id + " does not exist")
 
         tracable_record = sp.record(
             asset_repository_endpoint = repo_end_point,
@@ -75,7 +75,5 @@ class AssetTwinTracing(sp.Contract):
 @sp.add_test(name = "AssetTwinTracing")
 def test():
     sp.add_compilation_target("assetTwinTracing",
-        AssetTwinTracing(
-            sp.address("KT1_contract_address")
-        )
+        AssetTwinTracing()
     )

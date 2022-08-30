@@ -4,9 +4,25 @@ Open Asset Traceablility smart contracts on tezos.
 
 ## Testing
 
-There are several scenarios included for testing the functionality of the contracts. All Tests are included in a single file - `testScenarios.py`, in the root folder of this project.  To run the tests run the following command:
+There are several scenarios included for testing the functionality of the contracts. All Tests were implemented in a single file - `testScenarios.py`, in the root folder of this project.  
 
-`~/smartpy-cli/SmartPy.sh test testScenarios.py testing`
+The test require the following contract files in order to run successfully:
+- assetProvider.py
+- assetProviderRepository.py
+- assetTwinTracing.py
+- LUW.py
+- LUWRepository.py
+
+The logic is divided across these several files. Therefore, testing needs to be done using the smartPy IDE (https://smartpy.io/ide), so that the necessary files can be loaded.
+The command line client cannot be used due to this limitation.
+
+In order to run the tests, the first step is to store the necessary contracts to the smartPy IDE. 
+
+This can be done by using the **Create Contract** functionality.
+The names of the contracts **need to be the same as the file name** (eg. assetProvider.py) in order for the tests to load the contracts successfully.
+The create contract process starts with defining the name:
+
+![screenshots/01.png]
 
 The scenarios tested are be desribed seperately, per contract, as follows:
 

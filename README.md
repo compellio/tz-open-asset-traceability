@@ -22,9 +22,52 @@ This can be done by using the **Create Contract** functionality.
 The names of the contracts **need to be the same as the file name** (eg. assetProvider.py) in order for the tests to load the contracts successfully.
 The create contract process starts with defining the name:
 
-![screenshots/01.png]
+![Create contract process](screenshots/01.png)
 
-The scenarios tested are be desribed seperately, per contract, as follows:
+Following the definition, the contract code needs to be stored in the contract:
+
+**assetProvider.py**
+![assetProvider](screenshots/02.png)
+
+Repeat the process for all necessary contracts:
+
+**assetProvidertRepository.py**
+![assetProvidertRepository](screenshots/03.png)
+
+
+**assetTwinTracing.py**
+![assetTwinTracing](screenshots/04.png)
+
+**LUW.py**
+![LUW](screenshots/05.png)
+
+**LUWRepository.py**
+![LUWRepository](screenshots/06.png)
+
+Finally, the test contract is created, which is the one that will be run:
+
+**testSchenarios.py**
+![testSchenarios](screenshots/07.png)
+
+After all contracts are created, the following list can be seen in the List of Stored Contracts:
+![loaded_list](screenshots/08.png)
+
+After the contracts are created and the test scenario is also created and loaded, if we hit run then all tests will be executed and the result of the several verification executions will be presented in the output window as follows:
+![tests_run](screenshots/09.png)
+
+The list of the test results is presented in the output window:
+![test_results](screenshots/10.png)
+
+The difference in coloring between results is due to the verification type.
+The blue-colored result verified the successful execution of a test, whereas the brown-colored verified a test case that leads to failure of execution.
+
+For example, this is the test result for the successful flow of Set Provider Status operation , which was verified:
+![tests_true](screenshots/12.png)
+
+And this is the test result for the failed flow due to existing issuer of the Set Issuer Active operation, which also was verified that it is handled as expected:
+![tests_false](screenshots/11.png)
+
+A test was implemented for the following cases:
 
 ### assetProvider.py
 

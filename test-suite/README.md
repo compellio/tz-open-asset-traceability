@@ -41,6 +41,23 @@ did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1
 https://example.com/registration/
 ```
 
+### Fetch Asset Twin
+The use case for which the client requests the data of an Asset Twin that is stored in the blockchain.
+
+**Parameters:**
+
+**Asset Twin Hash (string)** - A string representing a hash of an Asset Twin. For example:
+
+```
+71fc1177f6a2b6c145bde55431690d948511ba36e2e4a1d50130549f65b4b5cb
+```
+
+**Provider DID (string)** - A string defining the address of the id of the did document. For example:
+
+```
+did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1
+```
+
 ### Get Provider
 
 The use case for which the client retrieves the Asset Twin data registered in the blockchain.
@@ -83,7 +100,7 @@ In case of using direct input, you should manually escape characters, so the abo
 '{\"@context\":\"https:\/\/w3id.org\/did\/v1\",\"id\":\"did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1\",\"verificationMethod\":[{\"id\":\"did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1\",\"type\":\"EcdsaSecp256k1VerificationKey2019\",\"controller\":\"did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1\",\"publicKeyJwk\":{\"kty\":\"EC\",\"crv\":\"secp256k1\",\"x\":\"n03trG-1sWidluyYQ2gcKrgYE94rMkLIArZCHjv2GpI\",\"y\":\"6__x_vqe0nBGYf7azbQ1_VvvuCafG5MhhUPNvYp-Mak\"}}],\"authentication\":[\"did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1\"],\"assertionMethod\":[\"did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1\"]}'
 ```
 
-### Set Provider Status
+### Provider Status Update
 
 The use case for which the client sets their provider status on the blockchain.
 
@@ -97,30 +114,3 @@ did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1
 
 **Status ID (nat) - Optional** - This is the ID of the status as listed in `provider_statuses` in the `Registry Logic` contract.
 
-### Set Provider Owner
-
-The use case for which the client sets the owner of the provider on the blockchain.
-
-**Provider DID (string)** - A string defining the address of the id of the did document. For example:
-
-```
-did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1
-```
-
-**Owner Address (address)** - This is the Tezos address of the new owner of the schema. For example:
-
-```
-tz1WM1wDM4mdtD3qMiELJSgbB14ZryyHNu7P
-```
- 
-### Get Provider
-
-The use case for which the client retrieves the did document of an provider.
-
-**Parameters:**
-
-**Provider did (string)** - A string defining the address of the id of the did document. For example:
-
-```
-did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1
-```

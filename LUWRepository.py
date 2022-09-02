@@ -104,6 +104,10 @@ class LUWRepository(sp.Contract):
         sp.set_type(provider_id, sp.TString)
         sp.set_type(luw_service_endpoint, sp.TAddress)
 
+        # Verifying whether the calling contract address is the logic contract
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
+                  message="Incorrect caller")
+
         # Defining the data that we expect as a return from the Logic contract
         data_schema = sp.TRecord(provider_id = sp.TString, luw_service_endpoint = sp.TAddress)
 
@@ -123,6 +127,10 @@ class LUWRepository(sp.Contract):
     def change_luw_state(self, luw_id, state_id):
         sp.set_type(luw_id, sp.TNat)
         sp.set_type(state_id, sp.TNat)
+
+        # Verifying whether the calling contract address is the logic contract
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
+                  message="Incorrect caller")
 
         sp.verify(self.data.states.contains(state_id), message = "Incorrect state ID")
 
@@ -152,6 +160,10 @@ class LUWRepository(sp.Contract):
     def add_repository(self, luw_id, repository_id):
         sp.set_type(luw_id, sp.TNat)
         sp.set_type(repository_id, sp.TString)
+
+        # Verifying whether the calling contract address is the logic contract
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
+                  message="Incorrect caller")
 
         owner_address = self.get_luw_owner_address(luw_id)
         sp.verify(self.verify_owner_source_address(
@@ -188,6 +200,10 @@ class LUWRepository(sp.Contract):
         sp.set_type(luw_id, sp.TNat)
         sp.set_type(repository_id, sp.TString)
         sp.set_type(state_id, sp.TNat)
+
+        # Verifying whether the calling contract address is the logic contract
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
+                  message="Incorrect caller")
 
         owner_address = self.get_luw_owner_address(luw_id)
         sp.verify(self.verify_owner_source_address(

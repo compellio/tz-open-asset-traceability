@@ -3,10 +3,11 @@
 import smartpy as sp
 
 class LUWRepository(sp.Contract):
-    def __init__(self, luw_contract):
+    def __init__(self, luw_contract, certifier):
         self.init_type(
             sp.TRecord(
                 luw_contract = sp.TAddress,
+                certifier = sp.TAddress,
                 states = sp.TBigMap(
                     sp.TNat,
                     sp.TString
@@ -19,6 +20,7 @@ class LUWRepository(sp.Contract):
         )
         self.init(
             luw_contract = luw_contract,
+            certifier = certifier,
             states = sp.big_map({
                 1: "active",
                 2: "prepare_to_commit",
@@ -216,6 +218,26 @@ class LUWRepository(sp.Contract):
         # Calling the Storage contract with the parameters we defined
         sp.transfer(params, sp.mutez(0), luw_contract)
 
+    @sp.entry_point
+    def update_storage_contract_with_address(self):
+        # Update is allowed only from certifier
+        with sp.if_(self.data.certifier != sp.source):
+            sp.failwith("Incorrect certifier")
+
+        # Defining the data expected by the Storage contract
+        contract_data = sp.TAddress
+
+        # Defining the Storage contract itself and its entry point for the call
+        storage_contract = sp.contract(contract_data, self.data.luw_contract, "change_logic_contract_address").open_some()
+
+        # The contract's own address will be passed as a parameter
+        logic_contract_adrress = sp.self_address
+
+        # Calling the Storage contract with the parameters we defined
+        sp.transfer(logic_contract_adrress, sp.mutez(0), storage_contract)
+
+
+
     @sp.onchain_view()
     def fetch_luw(self, luw_id):
         # Defining the parameters' types
@@ -297,5 +319,5 @@ class LUWRepository(sp.Contract):
 @sp.add_test(name = "LUWRepository")
 def test():
     sp.add_compilation_target("luwRepository",
-        LUWRepository(sp.address("KT1_contract_address"))
+        LUWRepository(sp.address("KT1_contract_address"),sp.address('tz1_certifier_address'))
     )

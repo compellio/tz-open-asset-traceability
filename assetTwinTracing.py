@@ -3,7 +3,7 @@
 import smartpy as sp
 
 class AssetTwinTracing(sp.Contract):
-    def __init__(self):
+    def __init__(self, certifier):
         self.init_type(
             sp.TRecord(
                 assets = sp.TBigMap(
@@ -16,11 +16,15 @@ class AssetTwinTracing(sp.Contract):
                         )
                     )
                 ),
+                calling_contract_address = sp.TOption(sp.TAddress),
+                certifier = sp.TAddress
                 # asset_provider_contract = sp.TAddress,
             )
         )
         self.init(
             assets = sp.big_map(),
+            calling_contract_address=sp.none,
+            certifier=certifier
             # asset_provider_contract = asset_provider_contract,
         )
 
@@ -44,6 +48,10 @@ class AssetTwinTracing(sp.Contract):
         sp.set_type(anchor_hash, sp.TString)
         sp.set_type(provider_id, sp.TString)
         sp.set_type(repo_end_point, sp.TString)
+
+        # Verifying whether the caller address is the calling contract
+        sp.verify(self.data.calling_contract_address.open_some(message="Empty calling_contract_address") == sp.sender,
+                  message="Incorrect caller")
 
         # sp.verify(self.verify_provider_exists(provider_id) == sp.bool(True), message = "Provider " + provider_id + " does not exist")
 
@@ -72,8 +80,17 @@ class AssetTwinTracing(sp.Contract):
         
         sp.result(self.data.assets[anchor_hash][provider_id])
 
+
+    @sp.entry_point
+    def change_calling_contract_address(self, new_calling_contract_address):
+        with sp.if_(self.data.certifier != sp.source):
+            sp.failwith("Incorrect certifier")
+
+        # Update logic contract address
+        self.data.calling_contract_address = sp.some(new_calling_contract_address)
+
 @sp.add_test(name = "AssetTwinTracing")
 def test():
     sp.add_compilation_target("assetTwinTracing",
-        AssetTwinTracing()
+        AssetTwinTracing(sp.address('tz1_certifier_address'))
     )

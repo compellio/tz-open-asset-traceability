@@ -39,7 +39,7 @@ class LUW(sp.Contract):
         sp.set_type(provider_id, sp.TString)
         sp.set_type(luw_service_endpoint, sp.TAddress)
 
-        # Verifying whether the caller address is the logic contract
+        # Verifying whether the calling contract address is the logic contract
         sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
                   message="Incorrect caller")
 
@@ -59,7 +59,7 @@ class LUW(sp.Contract):
         sp.set_type(luw_id, sp.TNat)
         sp.set_type(state_id, sp.TNat)
 
-        # Verifying whether the caller address is the logic contract
+        # Verifying whether the calling contract address is the logic contract
         sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
                   message="Incorrect caller")
 
@@ -88,7 +88,7 @@ class LUW(sp.Contract):
         sp.set_type(repository_id, sp.TString)
         sp.set_type(state_id, sp.TNat)
 
-        # Verifying whether the caller address is the logic contract
+        # Verifying whether the calling contract address is the logic contract
         sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
                   message="Incorrect caller")
 
@@ -118,7 +118,7 @@ class LUW(sp.Contract):
         sp.set_type(repository_id, sp.TString)
         sp.set_type(state_id, sp.TNat)
 
-        # Verifying whether the caller address is the logic contract
+        # Verifying whether the calling contract address is the logic contract
         sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
                   message="Incorrect caller")
 

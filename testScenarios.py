@@ -34,7 +34,7 @@ def test():
 
     scenario.h3("Asset Provider")
 
-    asset_provider = ASSET_PROVIDER.AssetProvider()
+    asset_provider = ASSET_PROVIDER.AssetProvider(certifier_address)
 
     scenario += asset_provider
 
@@ -43,26 +43,31 @@ def test():
     scenario.h3("Asset Provider Repository")
 
     asset_provider_repo = ASSET_PROVIDER_REPOSITORY.AssetProviderRepository(
-        asset_provider.address
+        asset_provider.address, certifier_address
     )
 
     scenario += asset_provider_repo
+
+    # Update logic contract address of the storage contract
+    scenario.h2("Updating storage contract with logic contract address for Asset Provider Repository")
+    asset_provider_repo.update_storage_contract_with_address().run(valid = True, sender = certifier_address)
 
     # Asset Twin  Contract Instantiation
 
     scenario.h3("Asset Twin Tracing")
 
     asset_twin_tracing = ASSET_TWIN_TRACING.AssetTwinTracing(
-        asset_provider.address
+        certifier_address
     )
 
     scenario += asset_twin_tracing
+
 
     # LUW Contract Instantiation
 
     scenario.h3("LUW")
 
-    luw_contract = LUW.LUW()
+    luw_contract = LUW.LUW(certifier_address)
 
     scenario += luw_contract
 
@@ -71,10 +76,14 @@ def test():
     scenario.h3("LUW Repository")
 
     luw_repo_contract = LUW_REPOSITORY.LUWRepository(
-        luw_contract.address
+        luw_contract.address, certifier_address
     )
 
     scenario += luw_repo_contract
+
+    # Update logic contract address of the storage contract
+    scenario.h2("Updating storage contract with logic contract address for LUW Repository")
+    luw_repo_contract.update_storage_contract_with_address().run(valid=True, sender=certifier_address)
 
     # Lambda Contract Instantiation
 
@@ -90,6 +99,11 @@ def test():
     )
 
     scenario += lambda_contract
+
+    # Update calling contract address of the asset twin contract to allow calls from the lambda contract
+
+    scenario.h2("Updating asset twin contract with calling contract address")
+    lambda_contract.change_at_calling_contract().run(valid=True, sender=certifier_address)
 
     # Testing 
 

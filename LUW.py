@@ -3,7 +3,7 @@
 import smartpy as sp
 
 class LUW(sp.Contract):
-    def __init__(self):
+    def __init__(self, certifier):
         self.init_type(
             sp.TRecord(
                 luw_map = sp.TBigMap(
@@ -23,17 +23,25 @@ class LUW(sp.Contract):
                     )
                 ),
                 luw_last_id = sp.TNat,
+                logic_contract_address = sp.TOption(sp.TAddress),
+                certifier = sp.TAddress
             )
         )
         self.init(
             luw_map = sp.big_map(),
             luw_last_id = 0,
+            logic_contract_address = sp.none,
+            certifier = certifier
         )
 
     @sp.entry_point
     def add(self, provider_id, luw_service_endpoint):
         sp.set_type(provider_id, sp.TString)
         sp.set_type(luw_service_endpoint, sp.TAddress)
+
+        # Verifying whether the calling contract address is the logic contract
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
+                  message="Incorrect caller")
 
         new_luw_record = sp.record(
             creator_wallet_address = sp.source,
@@ -50,6 +58,10 @@ class LUW(sp.Contract):
     def add_state(self, luw_id, state_id):
         sp.set_type(luw_id, sp.TNat)
         sp.set_type(state_id, sp.TNat)
+
+        # Verifying whether the calling contract address is the logic contract
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
+                  message="Incorrect caller")
 
         sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
 
@@ -75,6 +87,10 @@ class LUW(sp.Contract):
         sp.set_type(luw_id, sp.TNat)
         sp.set_type(repository_id, sp.TString)
         sp.set_type(state_id, sp.TNat)
+
+        # Verifying whether the calling contract address is the logic contract
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
+                  message="Incorrect caller")
 
         sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
 
@@ -102,6 +118,10 @@ class LUW(sp.Contract):
         sp.set_type(repository_id, sp.TString)
         sp.set_type(state_id, sp.TNat)
 
+        # Verifying whether the calling contract address is the logic contract
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
+                  message="Incorrect caller")
+
         sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
 
         luw = self.data.luw_map[luw_id]
@@ -119,6 +139,16 @@ class LUW(sp.Contract):
         )
 
         self.data.luw_map[luw_id] = new_luw_record
+
+
+    @sp.entry_point
+    def change_logic_contract_address(self, new_logic_contract_address):
+        with sp.if_(self.data.certifier != sp.source):
+            sp.failwith("Incorrect certifier")
+
+        # Update logic contract address
+        self.data.logic_contract_address = sp.some(new_logic_contract_address)
+
 
     @sp.onchain_view()
     def fetch(self, luw_id):
@@ -147,5 +177,5 @@ class LUW(sp.Contract):
 @sp.add_test(name = "LUW")
 def test():
     sp.add_compilation_target("luw",
-        LUW()
+        LUW(sp.address('tz1_certifier_address'))
     )

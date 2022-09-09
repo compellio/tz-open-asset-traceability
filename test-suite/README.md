@@ -28,13 +28,17 @@ The use case for which the client Regisrers an Asset Twin to the blockchain.
 ```
 71fc1177f6a2b6c145bde55431690d948511ba36e2e4a1d50130549f65b4b5cb
 ```
+> **Warning**
+> This is just an example. The asset twin hash should be unique. Trying to add the same hash twice will cause an error.
 
 **Provider DID (string)** - A string defining the address of the id of the did document. For example:
 
 ```
 did:tz:tz1zsSgDXeYPhZ3AuKhTFneDf1
 ```
-
+> **Warning**
+> This is just an example. The DID identifies the provider and should be unique. Trying to add the same DID twice will cause an error.
+> 
 **Endpoint (string)** - A string defining the endpoint where the Asset Twin registration can be verified. For example:
 
 ```

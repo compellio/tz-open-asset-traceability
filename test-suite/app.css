@@ -15,3 +15,64 @@
     background: #FFF;
     font-size: 36px;
 }
+
+#alert-sim {
+    height: 100px;
+    min-height: 100px;
+    overflow-y: scroll;
+}
+
+#sim-connections-layer {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+connection {
+    transform: scale(1.1);
+}
+
+.sim-container {
+    text-align: center;
+    background-color: #FFF;
+    z-index: 1;
+}
+
+.sim-container > :first-child {
+    font-weight: 700;
+}
+
+.sim-container .card {
+    color: #000 !important;
+}
+
+.sim-con-active {
+    text-align: center;
+    color: #FFF;
+    background-color: #198754 !important;
+}
+
+.sim-con-inactive {
+    text-align: center;
+    color: #FFF;
+    background-color: #dc3545 !important;
+}
+
+.con-inactive {
+    border-color: #AAA;
+}
+
+.con-active {
+    border-color: #198754 !important;
+}
+
+.con-blocked {
+    border-color: #dc3545 !important;
+}
+
+.actions-container {
+    width: 100%;
+    padding: 1rem 1rem;
+}

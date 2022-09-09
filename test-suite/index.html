@@ -4,7 +4,8 @@
     <link rel="stylesheet" type="text/css" href="./app.css">
     <title>Asset Twin Tracing</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script type="module" src="./vc.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script type="module" src="./oat.js"></script>
 </head>
 
 <body>
@@ -22,21 +23,28 @@
                         <a href="#" class="btn btn-primary" id="btn_connect">Connect Wallet</a>
                     </div>
 
-                    <ul id="settings-pills" class="d-none nav nav-pills ms-auto" id="pills-tab" role="tablist">
+                    <ul id="settings-pills" class="nav nav-pills ms-auto" id="pills-tab" role="tablist">
+                        <!-- <ul id="settings-pills" class="d-none nav nav-pills ms-auto" id="pills-tab" role="tablist"> -->
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="pills-asset-twin-tracing-tab" data-bs-toggle="pill"
-                                data-bs-target="#pills-asset-twin-tracing" type="button" role="tab" aria-controls="pills-asset-twin-tracing"
-                                aria-selected="true">Asset Twin Tracing</button>
+                                data-bs-target="#pills-asset-twin-tracing" type="button" role="tab"
+                                aria-controls="pills-asset-twin-tracing" aria-selected="true">Asset Twin
+                                Tracing</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="pills-asset-provider-tab" data-bs-toggle="pill"
-                                data-bs-target="#pills-asset-provider" type="button" role="tab" aria-controls="pills-asset-provider"
-                                aria-selected="false">Asset Providers</button>
+                                data-bs-target="#pills-asset-provider" type="button" role="tab"
+                                aria-controls="pills-asset-provider" aria-selected="false">Asset Providers</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="pills-luw-tab" data-bs-toggle="pill"
-                                data-bs-target="#pills-luw" type="button" role="tab"
-                                aria-controls="pills-luw" aria-selected="false">Logical Unit (of) Work</button>
+                                data-bs-target="#pills-luw" type="button" role="tab" aria-controls="pills-luw"
+                                aria-selected="false">Logical Unit (of) Work</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pills-simulation-tab" data-bs-toggle="pill"
+                                data-bs-target="#pills-simulation" type="button" role="tab"
+                                aria-controls="pills-simulation" aria-selected="false">Simulation</button>
                         </li>
                     </ul>
                 </div>
@@ -53,80 +61,105 @@
         </div>
     </nav>
     <div>
-        <div class="d-flex justify-content-center align-items-center flex-column mt-4">
+        <div class="d-flex justify-content-start align-items-center flex-column mt-4">
             <div id="alert-result" style="width: 50%;" class="d-none" role="alert"></div>
-            <div class="tab-content d-flex justify-content-center align-items-center w-50" id="pills-tabContent">
-                <div class="tab-pane fade show active w-100" id="pills-asset-twin-tracing" role="tabpanel" aria-labelledby="pills-asset-twin-tracing-tab">
+            <div class="tab-content d-flex justify-content-center align-items-center w-100" id="pills-tabContent">
+                <div class="tab-pane fade show active w-50" id="pills-asset-twin-tracing" role="tabpanel"
+                    aria-labelledby="pills-asset-twin-tracing-tab">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="title-bar mt-4">Register Asset Twin</h5>
-                            <input class="form-control mt-2" type="text" id="asset_twin_hash" placeholder="Anchor Hash"></input >
-                            <input class="form-control mt-2" type="text" id="asset_twin_provider_id" placeholder="Provider ID"></input >
-                            <input class="form-control mt-2" type="text" id="asset_twin_repo_endpoint" placeholder="Repository Endpoint"></input >
+                            <input class="form-control mt-2" type="text" id="asset_twin_hash"
+                                placeholder="Anchor Hash"></input>
+                            <input class="form-control mt-2" type="text" id="asset_twin_provider_id"
+                                placeholder="Provider ID"></input>
+                            <input class="form-control mt-2" type="text" id="asset_twin_repo_endpoint"
+                                placeholder="Repository Endpoint"></input>
                             <a href="#" id="btn_register_asset_twin" class="btn btn-primary mt-2">Register</a>
 
-                            <hr/> 
+                            <hr />
 
                             <h5 class="title-bar mt-4">Fetch Asset Twin</h5>
                             <div class="content-box">
-                                <input class="form-control mt-2" type="text" id="asset_twin_hash_get" placeholder="Anchor Hash" />
-                                <input class="form-control mt-2" type="text" id="asset_twin_provider_id_get" placeholder="Provider ID" />
+                                <input class="form-control mt-2" type="text" id="asset_twin_hash_get"
+                                    placeholder="Anchor Hash" />
+                                <input class="form-control mt-2" type="text" id="asset_twin_provider_id_get"
+                                    placeholder="Provider ID" />
                                 <a href="#" id="btn_get_asset_twin" class="btn btn-primary mt-2">Fetch</a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade w-100" id="pills-asset-provider" role="tabpanel" aria-labelledby="pills-asset-provider-tab">
+                <div class="tab-pane fade w-50" id="pills-asset-provider" role="tabpanel"
+                    aria-labelledby="pills-asset-provider-tab">
                     <div class="card">
                         <div class="card-body">
                             <h4 class="title-bar mt-4">Asset Providers</h4>
                             <div class="content-box">
                                 <ul class="nav nav-pills ms-auto" id="pills-tab" role="tablist">
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" id="pills-provider-data-update-tab" data-bs-toggle="pill"
-                                            data-bs-target="#pills-provider-data-update" type="button" role="tab" aria-controls="pills-provider-data-update"
+                                        <button class="nav-link active" id="pills-provider-data-update-tab"
+                                            data-bs-toggle="pill" data-bs-target="#pills-provider-data-update"
+                                            type="button" role="tab" aria-controls="pills-provider-data-update"
                                             aria-selected="true">Provider Creation</button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="pills-provider-status-update-tab" data-bs-toggle="pill"
-                                            data-bs-target="#pills-provider-status-update" type="button" role="tab" aria-controls="pills-provider-status-update"
+                                        <button class="nav-link" id="pills-provider-status-update-tab"
+                                            data-bs-toggle="pill" data-bs-target="#pills-provider-status-update"
+                                            type="button" role="tab" aria-controls="pills-provider-status-update"
                                             aria-selected="false">Provider Status Update</button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="pills-provider-owner-update-tab" data-bs-toggle="pill"
-                                            data-bs-target="#pills-provider-owner-update" type="button" role="tab"
-                                            aria-controls="pills-provider-owner-update" aria-selected="false">Provider Owner Update</button>
+                                        <button class="nav-link" id="pills-provider-owner-update-tab"
+                                            data-bs-toggle="pill" data-bs-target="#pills-provider-owner-update"
+                                            type="button" role="tab" aria-controls="pills-provider-owner-update"
+                                            aria-selected="false">Provider Owner Update</button>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="pills-provider-get-tab" data-bs-toggle="pill"
                                             data-bs-target="#pills-provider-get" type="button" role="tab"
-                                            aria-controls="pills-provider-get" aria-selected="false">Get Provider</button>
+                                            aria-controls="pills-provider-get" aria-selected="false">Get
+                                            Provider</button>
                                     </li>
                                 </ul>
-                                <input class="form-control mt-2" type="text" id="provider_id" placeholder="Provider ID" />
-                                
+                                <input class="form-control mt-2" type="text" id="provider_id"
+                                    placeholder="Provider ID" />
+
                                 <div class="tab-content" id="pills-tabContent">
-                                    <div class="tab-pane fade show active" id="pills-provider-data-update" role="tabpanel" aria-labelledby="pills-home-tab">
+                                    <div class="tab-pane fade show active" id="pills-provider-data-update"
+                                        role="tabpanel" aria-labelledby="pills-home-tab">
                                         <h5 class="title-bar mt-4">Create Provider</h5>
-                                        <textarea class="form-control mt-2 w-100" type="textarea" id="provider_data" placeholder="Provider Data" rows="3"></textarea >
-                                        <a href="#" id="btn_provider_issue" class="btn btn-primary mt-2">Create Provider</a>
-                                        <a href="#" id="btn_provider_update_data" class="btn btn-primary mt-2">Update Data</a>
+                                        <textarea class="form-control mt-2 w-100" type="textarea" id="provider_data"
+                                            placeholder="Provider Data" rows="3"></textarea>
+                                        <a href="#" id="btn_provider_issue" class="btn btn-primary mt-2">Create
+                                            Provider</a>
+                                        <a href="#" id="btn_provider_update_data" class="btn btn-primary mt-2">Update
+                                            Data</a>
                                     </div>
-                                    <div class="tab-pane fade" id="pills-provider-status-update" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                    <div class="tab-pane fade" id="pills-provider-status-update" role="tabpanel"
+                                        aria-labelledby="pills-profile-tab">
                                         <h5 class="title-bar mt-4">Update Provider Status</h5>
                                         <div class="d-flex mt-2" style="gap: 0.25rem;">
-                                            <a href="#" id="btn_provider_activate" class="btn btn-primary">Set Active</a>
-                                            <a href="#" id="btn_provider_deactivate" class="btn btn-primary">Set Deprecated</a>
-                                            <input class="form-control w-25" type="text" id="provider_status_id" placeholder="Status ID" />
-                                            <a href="#" id="btn_provider_set_status" class="btn btn-primary">Set Status</a>
+                                            <a href="#" id="btn_provider_activate" class="btn btn-primary">Set
+                                                Active</a>
+                                            <a href="#" id="btn_provider_deactivate" class="btn btn-primary">Set
+                                                Deprecated</a>
+                                            <input class="form-control w-25" type="text" id="provider_status_id"
+                                                placeholder="Status ID" />
+                                            <a href="#" id="btn_provider_set_status" class="btn btn-primary">Set
+                                                Status</a>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="pills-provider-owner-update" role="tabpanel" aria-labelledby="pills-contact-tab">
+                                    <div class="tab-pane fade" id="pills-provider-owner-update" role="tabpanel"
+                                        aria-labelledby="pills-contact-tab">
                                         <h5 class="title-bar mt-4">Update Provider Owner</h5>
-                                        <input class="form-control" type="text" id="provider_owner" placeholder="Provider Owner Address" />
-                                        <a href="#" id="btn_provider_owner_update" class="btn btn-primary mt-2">Update</a>
+                                        <input class="form-control" type="text" id="provider_owner"
+                                            placeholder="Provider Owner Address" />
+                                        <a href="#" id="btn_provider_owner_update"
+                                            class="btn btn-primary mt-2">Update</a>
                                     </div>
-                                    <div class="tab-pane fade" id="pills-provider-get" role="tabpanel" aria-labelledby="pills-contact-tab">
+                                    <div class="tab-pane fade" id="pills-provider-get" role="tabpanel"
+                                        aria-labelledby="pills-contact-tab">
                                         <h5 class="title-bar mt-4">Get Provider</h5>
                                         <a href="#" id="btn_provider_get" class="btn btn-primary mt-2">Get</a>
                                     </div>
@@ -135,7 +168,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade w-100" id="pills-luw" role="tabpanel" aria-labelledby="pills-luw-tab">
+                <div class="tab-pane fade w-50" id="pills-luw" role="tabpanel" aria-labelledby="pills-luw-tab">
                     <div class="card">
                         <div class="card-body">
                             <h4 class="title-bar mt-4">LUW</h4>
@@ -143,65 +176,84 @@
                                 <ul class="nav nav-pills ms-auto" id="pills-tab" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link active" id="pills-create-luw-tab" data-bs-toggle="pill"
-                                            data-bs-target="#pills-create-luw" type="button" role="tab" aria-controls="pills-create-luw"
-                                            aria-selected="true">LUW Creation</button>
+                                            data-bs-target="#pills-create-luw" type="button" role="tab"
+                                            aria-controls="pills-create-luw" aria-selected="true">LUW Creation</button>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="pills-luw-state-tab" data-bs-toggle="pill"
-                                            data-bs-target="#pills-luw-state" type="button" role="tab" aria-controls="pills-luw-state"
-                                            aria-selected="true">LUW State</button>
+                                            data-bs-target="#pills-luw-state" type="button" role="tab"
+                                            aria-controls="pills-luw-state" aria-selected="true">LUW State</button>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="pills-luw-repositories-tab" data-bs-toggle="pill"
-                                            data-bs-target="#pills-luw-repositories" type="button" role="tab" aria-controls="pills-luw-repositories"
-                                            aria-selected="true">LUW Repositories</button>
+                                            data-bs-target="#pills-luw-repositories" type="button" role="tab"
+                                            aria-controls="pills-luw-repositories" aria-selected="true">LUW
+                                            Repositories</button>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="pills-luw-repository-state-tab" data-bs-toggle="pill"
-                                            data-bs-target="#pills-luw-repository-state" type="button" role="tab" aria-controls="pills-luw-repository-state"
+                                        <button class="nav-link" id="pills-luw-repository-state-tab"
+                                            data-bs-toggle="pill" data-bs-target="#pills-luw-repository-state"
+                                            type="button" role="tab" aria-controls="pills-luw-repository-state"
                                             aria-selected="true">LUW Repository States</button>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link" id="pills-fetch-luw-tab" data-bs-toggle="pill"
-                                            data-bs-target="#pills-fetch-luw" type="button" role="tab" aria-controls="pills-fetch-luw"
-                                            aria-selected="true">Fetch LUW</button>
+                                            data-bs-target="#pills-fetch-luw" type="button" role="tab"
+                                            aria-controls="pills-fetch-luw" aria-selected="true">Fetch LUW</button>
                                     </li>
                                 </ul>
                                 <div class="tab-content" id="pills-tabContent">
-                                    <div class="tab-pane fade show active" id="pills-create-luw" role="tabpanel" aria-labelledby="pills-home-tab">
+                                    <div class="tab-pane fade show active" id="pills-create-luw" role="tabpanel"
+                                        aria-labelledby="pills-home-tab">
                                         <h5 class="title-bar mt-4 w-full">Create LUW</h5>
-                                        <input class="form-control mt-2" type="text" id="create_luw_provider" placeholder="Provider ID" />
-                                        <input class="form-control mt-2" type="text" id="create_luw_endpoint" placeholder="Service Endpoint" />
+                                        <input class="form-control mt-2" type="text" id="create_luw_provider"
+                                            placeholder="Provider ID" />
+                                        <input class="form-control mt-2" type="text" id="create_luw_endpoint"
+                                            placeholder="Service Endpoint" />
                                         <a href="#" id="btn_create_luw" class="btn btn-primary mt-2">Create LUW</a>
                                     </div>
-                                    <div class="tab-pane fade show" id="pills-luw-state" role="tabpanel" aria-labelledby="pills-home-tab">
+                                    <div class="tab-pane fade show" id="pills-luw-state" role="tabpanel"
+                                        aria-labelledby="pills-home-tab">
                                         <h5 class="title-bar mt-4 w-full">Change LUW State</h5>
-                                        <input class="form-control mt-2" type="number" id="change_luw_state_id" placeholder="LUW ID" />
+                                        <input class="form-control mt-2" type="number" id="change_luw_state_id"
+                                            placeholder="LUW ID" />
                                         <a href="#" id="btn_state_luw_active" class="btn btn-primary mt-2">Active</a>
-                                        <a href="#" id="btn_state_luw_prepare" class="btn btn-primary mt-2">Prepare To Commit</a>
+                                        <a href="#" id="btn_state_luw_prepare" class="btn btn-primary mt-2">Prepare To
+                                            Commit</a>
                                         <a href="#" id="btn_state_luw_commit" class="btn btn-primary mt-2">Commit</a>
                                         <a href="#" id="btn_state_luw_abort" class="btn btn-primary mt-2">Abort</a>
                                     </div>
-                                    <div class="tab-pane fade show" id="pills-luw-repositories" role="tabpanel" aria-labelledby="pills-home-tab">
+                                    <div class="tab-pane fade show" id="pills-luw-repositories" role="tabpanel"
+                                        aria-labelledby="pills-home-tab">
                                         <h5 class="title-bar mt-4 w-full">LUW Repositories</h5>
-                                        <input class="form-control mt-2" type="number" id="add_luw_repository_id" placeholder="LUW ID" />
-                                        <input class="form-control mt-2" type="text" id="add_luw_repository_repo_id" placeholder="Repository ID" />
+                                        <input class="form-control mt-2" type="number" id="add_luw_repository_id"
+                                            placeholder="LUW ID" />
+                                        <input class="form-control mt-2" type="text" id="add_luw_repository_repo_id"
+                                            placeholder="Repository ID" />
 
-                                        <a href="#" id="btn_add_repository" class="btn btn-primary mt-2">Add Repository</a>
+                                        <a href="#" id="btn_add_repository" class="btn btn-primary mt-2">Add
+                                            Repository</a>
                                     </div>
-                                    <div class="tab-pane fade show" id="pills-luw-repository-state" role="tabpanel" aria-labelledby="pills-home-tab">
+                                    <div class="tab-pane fade show" id="pills-luw-repository-state" role="tabpanel"
+                                        aria-labelledby="pills-home-tab">
                                         <h5 class="title-bar mt-4 w-full">Change LUW Repository States</h5>
-                                        <input class="form-control mt-2" type="number" id="change_luw_repo_state_id" placeholder="LUW ID" />
-                                        <input class="form-control mt-2" type="text" id="change_luw_repo_state_repo_id" placeholder="Repository ID" />
+                                        <input class="form-control mt-2" type="number" id="change_luw_repo_state_id"
+                                            placeholder="LUW ID" />
+                                        <input class="form-control mt-2" type="text" id="change_luw_repo_state_repo_id"
+                                            placeholder="Repository ID" />
 
                                         <a href="#" id="btn_state_luw_repo_open" class="btn btn-primary mt-2">Open</a>
                                         <a href="#" id="btn_state_luw_repo_ready" class="btn btn-primary mt-2">Ready</a>
-                                        <a href="#" id="btn_state_luw_repo_commited" class="btn btn-primary mt-2">Commited</a>
-                                        <a href="#" id="btn_state_luw_repo_rollbacked" class="btn btn-primary mt-2">Rollbacked</a>
+                                        <a href="#" id="btn_state_luw_repo_commited"
+                                            class="btn btn-primary mt-2">Commited</a>
+                                        <a href="#" id="btn_state_luw_repo_rollbacked"
+                                            class="btn btn-primary mt-2">Rollbacked</a>
                                     </div>
-                                    <div class="tab-pane fade show" id="pills-fetch-luw" role="tabpanel" aria-labelledby="pills-home-tab">
+                                    <div class="tab-pane fade show" id="pills-fetch-luw" role="tabpanel"
+                                        aria-labelledby="pills-home-tab">
                                         <h5 class="title-bar mt-4 w-full">Fetch LUW</h5>
-                                        <input class="form-control mt-2" type="number" id="fetch_luw_id" placeholder="LUW ID" />
+                                        <input class="form-control mt-2" type="number" id="fetch_luw_id"
+                                            placeholder="LUW ID" />
 
                                         <a href="#" id="btn_fetch_luw" class="btn btn-primary mt-2">Fetch LUW</a>
                                     </div>
@@ -210,29 +262,112 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div id="result-loader" class="d-none flex-column align-items-center justify-content-center mt-4">
-            <div class="row">
-                <div class="spinner-border text-primary" role="status"></div>
-            </div>
-            <div class="row text-primary">
-                <strong>Fetching results</strong>
-            </div>
-        </div>
-        <div id="view-result" class="d-none justify-content-center">
-            <div class="d-flex flex-column w-50 mt-4">
-                <h4 class="title-bar">Result</h4>
-                <pre id="view-result-pre" class="bg-light p-2 mt-2"></pre>
+                <div class="tab-pane fade w-100" id="pills-simulation" role="tabpanel"
+                    aria-labelledby="pills-simulation-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="title-bar mt-4">Simulation</h4>
+                            <div id="alert-sim" style="width: 100%;" class="alert alert-info">Click on the "Initiate Simulation" button</div>
+                            <a href="#" id="btn_next_step" style="display: none;" class="btn btn-primary mt-2 me-2">Next Step</a>
+                            <a href="#" id="btn_init_sim" class="btn btn-primary mt-2">Initiate Simulation</a>
+                            <div id="sim-megacontainer" class="position-relative">
+                                <div>
+                                    <div id="sim-top-layer" class="d-flex justify-content-start w-100" style="height: 100px;">
+                                        <div id="sim-customer" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-2 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Customer</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                        <div id="sim-bank" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Bank</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                    </div>
+                                    <div id="sim-mid-top-layer" class="d-flex justify-content-start w-100" style="min-height: 100px; margin-top: 5rem;">
+                                        <div id="sim-coordinator" class="sim-container animate__pulse animate__slow animate__infinite col-4 offset-4 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2 position-relative">
+                                            <div>Coordinator</div>
+                                            <div class="actions-container"></div>
+                                            <div class="d-flex w-100 position-absolute invisible bottom-0">
+                                                <div id="sim-coor-left" class="w-50"></div>
+                                                <div id="sim-coor-right" class="w-50"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="sim-mid-layer" class="d-flex justify-content-start w-100" style="min-height: 100px; margin-top: 5rem;">
+                                        <div id="sim-ivc-repo" class="sim-container animate__pulse animate__slow animate__infinite col-2 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>IVC Repository</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                        <div id="sim-ivc" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Identity Verification Company</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                        <div id="sim-utility" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-2 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Utility Company</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                        <div id="sim-utility-repo" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Utility Company Repo</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                    </div>
+                                    <div id="sim-mid-bottom-layer" class="d-flex justify-content-start w-100" style="min-height: 100px; margin-top: 5rem;">
+                                        <div id="sim-att" class="sim-container animate__pulse animate__slow animate__infinite col-4 offset-4 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2 position-relative">
+                                            <div>Asset Twin Tracing</div>
+                                            <div class="actions-container"></div>
+                                            <div class="d-flex w-100 justify-content-between position-absolute invisible bottom-0">
+                                                <div id="sim-att-left" style="width: 30%;"></div>
+                                                <div id="sim-att-right" style="width: 30%;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="sim-bottom-layer" class="d-flex justify-content-start w-100" style="min-height: 100px; margin-top: 5rem;">
+                                        <div id="sim-luw" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-2 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>LUW</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                        <div id="sim-provider" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Asset Provider</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                        <div id="sim-asset" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Asset Twin Tracing</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="sim-connections-layer">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div id="app-overlay" class="d-flex justify-content-center align-items-center bg-light fs-1 position-absolute top-0 left-0 w-100 h-100">
+    <div id="result-loader" class="d-none flex-column align-items-center justify-content-center mt-4">
+        <div class="row">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <div class="row text-primary">
+            <strong>Fetching results</strong>
+        </div>
+    </div>
+    <div id="view-result" class="d-none justify-content-center">
+        <div class="d-flex flex-column w-50 mt-4">
+            <h4 class="title-bar">Result</h4>
+            <pre id="view-result-pre" class="bg-light p-2 mt-2"></pre>
+        </div>
+    </div>
+    </div>
+    <!-- <div id="app-overlay" class="d-flex justify-content-center align-items-center bg-light fs-1 position-absolute top-0 left-0 w-100 h-100">
         <div>Activate wallet before proceeding</div>
-    </div>
-    
+    </div> -->
+
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script type="module" src="./connections.js"></script>
 
 </html>

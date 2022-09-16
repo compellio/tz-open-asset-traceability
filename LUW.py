@@ -66,11 +66,14 @@ class LUW(sp.Contract):
 
     @sp.onchain_view()
     def fetch(self, luw_id):
+        sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
+
         sp.result(self.data.luw_map[luw_id])
 
     @sp.onchain_view()
     def get_active_state(self, luw_id):
         sp.set_type(luw_id, sp.TNat)
+        sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
         
         luw = self.data.luw_map[luw_id]
         last_state = luw.state_history[sp.len(luw.state_history)]
@@ -78,6 +81,7 @@ class LUW(sp.Contract):
 
     @sp.onchain_view()
     def get_luw_owner_address(self, luw_id):
+        sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
         sp.result(self.data.luw_map[luw_id].creator_wallet_address)
 
 @sp.add_test(name = "LUW")

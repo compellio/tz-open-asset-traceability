@@ -76,11 +76,12 @@ def test():
     # Testing 
 
     scenario.h1("Testing")
+    scenario.h2("Expected Successful Cases")
 
     # Asset Provider Testing
 
-    scenario.h2("Asset Provider Testing")
-    scenario.h3("Asset Provider Creation")
+    scenario.h3("Asset Provider Testing")
+    scenario.h4("Asset Provider Creation")
 
     asset_provider_data_A = "asset_provider_data_A"
     asset_provider_data_B = "asset_provider_data_B"
@@ -100,11 +101,10 @@ def test():
 
     asset_provider_repo.create_asset_provider(asset_provider_1).run(valid = True, sender = operator_A_address)
     scenario.verify(asset_provider_repo.get_asset_provider(provider_did_1).provider_data == asset_provider_data_A)
-    asset_provider_repo.create_asset_provider(asset_provider_1).run(valid = False, sender = operator_B_address)
     asset_provider_repo.create_asset_provider(asset_provider_2).run(valid = True, sender = operator_B_address)
     scenario.verify(asset_provider_repo.get_asset_provider(provider_did_2).provider_data == asset_provider_data_B)
 
-    scenario.h3("Asset Provider Status Change")
+    scenario.h4("Asset Provider Status Change")
 
     asset_provider_status_valid = sp.record(
         provider_did = provider_did_1,
@@ -123,15 +123,12 @@ def test():
 
     asset_provider_repo.set_provider_deprecated(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
     scenario.verify(asset_provider_repo.get_asset_provider(provider_did_1).status == "deprecated")
-    asset_provider_repo.set_provider_active(asset_provider_status_valid).run(valid = False, sender = operator_B_address)
     asset_provider_repo.set_provider_status(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
     scenario.verify(asset_provider_repo.get_asset_provider(provider_did_1).status == "active")
-    asset_provider_repo.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address)
-    asset_provider_repo.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address)
 
     # Asset Twin Testing
 
-    scenario.h2("Asset Twin Testing")
+    scenario.h3("Asset Twin Testing")
 
     hash_1 = "efb583d376b19d92d81e75bea335768d2b5cc9d60460c182cb6e66e8031b1aea"
     hash_2 = "fc2c0c139d5b71c45a339f91a81961904ec564d62ca3727e0679bef4193c7c7a"
@@ -162,7 +159,6 @@ def test():
 
     asset_twin_tracing.register(hash_1_provider_1).run(valid = True, sender = operator_A_address)
     scenario.verify(asset_twin_tracing.fetch_asset_twin(hash_1_provider_1).creator_wallet_address == operator_A_address)
-    asset_twin_tracing.register(hash_1_provider_1).run(valid = False, sender = operator_B_address)
     asset_twin_tracing.register(hash_1_provider_2).run(valid = True, sender = operator_A_address)
     asset_twin_tracing.register(hash_2_provider_1).run(valid = True, sender = operator_B_address)
     scenario.verify(asset_twin_tracing.fetch_asset_twin(hash_2_provider_1).creator_wallet_address == operator_B_address)
@@ -170,7 +166,7 @@ def test():
 
     # LUW Testing 
 
-    scenario.h2("LUW Testing")
+    scenario.h3("LUW Testing")
 
     luw_record = sp.record(
         provider_id = "provider_id",
@@ -196,9 +192,42 @@ def test():
         state_id = 999,
     )
 
-    luw_repo_contract.change_luw_state(luw_valid_new_state_record).run(valid = False, sender = operator_B_address)
     luw_repo_contract.change_luw_state(luw_valid_new_state_record).run(valid = True, sender = operator_A_address)
-    luw_repo_contract.change_luw_state(luw_new_state_invalid_luw_id_record).run(valid = False, sender = operator_A_address)
-    luw_repo_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address)
     scenario.verify(luw_repo_contract.get_active_state(0) == "prepare_to_commit")
     
+    scenario.h2("Expected Failed Cases")
+
+    # Asset Provider Testing
+
+    scenario.h3("Asset Provider")
+    scenario.h4("Asset Provider Creation")
+
+    scenario.h4("Adding an excisting Provider ID. Expected exception - Provider ID already exists")
+    asset_provider_repo.create_asset_provider(asset_provider_1).run(valid = False, sender = operator_B_address, exception = "Provider ID already exists")
+
+    scenario.h4("Asset Provider Status Change")
+
+    scenario.h4("Changing Provider Status to Active from wrong Address. Expected exception - Incorrect owner")
+    asset_provider_repo.set_provider_active(asset_provider_status_valid).run(valid = False, sender = operator_B_address, exception = "Incorrect owner")
+    scenario.h4("Changing Provider Status from wrong Address. Expected exception - Incorrect owner")
+    asset_provider_repo.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address, exception = "Incorrect owner")
+    scenario.h4("Changing Status of a non-existent Provider. Expected exception - Provider ID does not exist")
+    asset_provider_repo.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address, exception = "Provider ID does not exist")
+
+    # Asset Twin Testing
+
+    scenario.h3("Asset Twin")
+
+    scenario.h4("Registering an existing Anchor Hash/Provider combination. Expected exception - Anchor Hash already exists for Provider")
+    asset_twin_tracing.register(hash_1_provider_1).run(valid = False, sender = operator_B_address, exception = 'Hash ' + hash_1_provider_1.anchor_hash + ' already exists for provider ' + hash_1_provider_1.provider_did)
+
+    # LUW Testing 
+
+    scenario.h3("LUW")
+
+    scenario.h4("Changing LUW State from wrong Address. Expected exception - Incorrect owner")
+    luw_repo_contract.change_luw_state(luw_valid_new_state_record).run(valid = False, sender = operator_B_address, exception = "Incorrect owner")
+    scenario.h4("Trying to change LUW State of a non-existent LUW ID. Expected exception - LUW ID does not exist")
+    luw_repo_contract.change_luw_state(luw_new_state_invalid_luw_id_record).run(valid = False, sender = operator_A_address, exception = "LUW ID does not exist")
+    scenario.h4("Changing LUW State to an incorrect State. Expected exception - Incorrect state ID")
+    luw_repo_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address, exception = "Incorrect state ID")

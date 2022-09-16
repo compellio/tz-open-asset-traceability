@@ -40,6 +40,7 @@ class AssetProvider(sp.Contract):
 
     @sp.onchain_view()
     def get_asset_provider(self, provider_did):
+        sp.verify(self.data.asset_providers.contains(provider_did), message = "Provider ID does not exist")
         sp.result(self.data.asset_providers[provider_did])
 
     @sp.onchain_view()
@@ -48,6 +49,7 @@ class AssetProvider(sp.Contract):
 
     @sp.onchain_view()
     def get_provider_owner_address(self, provider_did):
+        sp.verify(self.data.asset_providers.contains(provider_did), message = "Provider ID does not exist")
         sp.result(self.data.asset_providers[provider_did].creator_wallet_address)
 
 @sp.add_test(name = "AssetProvider")

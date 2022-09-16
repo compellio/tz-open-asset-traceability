@@ -68,7 +68,7 @@ class AssetProviderRepository(sp.Contract):
         sp.set_type(provider_data, sp.TString)
 
         # Check if provider does not exist, does not allow add call otherwise
-        sp.verify(self.check_provider_exists(provider_did) == sp.bool(False), message = "Provider did already exists")
+        sp.verify(self.check_provider_exists(provider_did) == sp.bool(False), message = "Provider ID already exists")
 
         data_schema = sp.TRecord(
             provider_did = sp.TString,

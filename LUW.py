@@ -83,7 +83,7 @@ class LUW(sp.Contract):
         self.data.luw_map[luw_id] = new_luw_record
 
     @sp.entry_point
-    def add_repository(self, luw_id, repository_id, state_id):
+    def add_repository(self, luw_id, repository_id, state_id = 1):
         sp.set_type(luw_id, sp.TNat)
         sp.set_type(repository_id, sp.TString)
         sp.set_type(state_id, sp.TNat)

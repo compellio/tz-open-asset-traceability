@@ -3,10 +3,10 @@
 import smartpy as sp
 
 class AssetProviderRepository(sp.Contract):
-    def __init__(self, data_contract, certifier):
+    def __init__(self, storage_contract, certifier):
         self.init_type(
             sp.TRecord(
-                data_contract = sp.TAddress,
+                storage_contract = sp.TAddress,
                 certifier = sp.TAddress,
                 provider_statuses = sp.TBigMap(
                     sp.TNat,
@@ -15,7 +15,7 @@ class AssetProviderRepository(sp.Contract):
             )
         )
         self.init(
-            data_contract = data_contract,
+            storage_contract = storage_contract,
             provider_statuses = sp.big_map({
                 1: "active",
                 2: "deprecated"
@@ -41,7 +41,7 @@ class AssetProviderRepository(sp.Contract):
     def verify_provider_exists(self, provider_id):
         provider_existance = sp.view(
             "verify_provider_exists",
-            self.data.data_contract,
+            self.data.storage_contract,
             provider_id,
             t = sp.TBool
         ).open_some("Invalid view");
@@ -52,7 +52,7 @@ class AssetProviderRepository(sp.Contract):
     def get_provider_owner_address(self, provider_id):
         provider_owner_address = sp.view(
             "get_provider_owner_address",
-            self.data.data_contract,
+            self.data.storage_contract,
             provider_id,
             t = sp.TAddress
         ).open_some("Invalid view");
@@ -75,7 +75,7 @@ class AssetProviderRepository(sp.Contract):
         )
 
         # Defining the Logic contract itself and its entry point for the call
-        data_contract = sp.contract(data_schema, self.data.data_contract, "create_asset_provider").open_some()
+        storage_contract = sp.contract(data_schema, self.data.storage_contract, "create_asset_provider").open_some()
         
         # Defining the parameters that will be passed to the Storage contract
         params = sp.record(
@@ -86,7 +86,7 @@ class AssetProviderRepository(sp.Contract):
         )
 
         # Calling the Storage contract with the parameters we defined
-        sp.transfer(params, sp.mutez(0), data_contract)
+        sp.transfer(params, sp.mutez(0), storage_contract)
 
     @sp.entry_point
     def set_provider_active(self, parameters):
@@ -105,7 +105,7 @@ class AssetProviderRepository(sp.Contract):
         contract_data = sp.TRecord(provider_id = sp.TString, status = sp.TNat)
 
         # Defining the Storage contract itself and its entry point for the call
-        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_status").open_some()
+        storage_contract = sp.contract(contract_data, self.data.storage_contract, "change_status").open_some()
 
         # Defining the parameters that will be passed to the Storage contract
         params = sp.record(
@@ -133,7 +133,7 @@ class AssetProviderRepository(sp.Contract):
         contract_data = sp.TRecord(provider_id = sp.TString, status = sp.TNat)
 
         # Defining the Storage contract itself and its entry point for the call
-        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_status").open_some()
+        storage_contract = sp.contract(contract_data, self.data.storage_contract, "change_status").open_some()
 
         # Defining the parameters that will be passed to the Storage contract
         params = sp.record(
@@ -162,7 +162,7 @@ class AssetProviderRepository(sp.Contract):
         contract_data = sp.TRecord(provider_id = sp.TString, status = sp.TNat)
 
         # Defining the Storage contract itself and its entry point for the call
-        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_status").open_some()
+        storage_contract = sp.contract(contract_data, self.data.storage_contract, "change_status").open_some()
 
         # Verify status ID exists
         sp.verify(self.data.provider_statuses.contains(parameters.status), message = "Incorrect status")
@@ -197,7 +197,7 @@ class AssetProviderRepository(sp.Contract):
         contract_data = sp.TRecord(provider_id = sp.TString, provider_data = sp.TString)
 
         # Defining the Storage contract itself and its entry point for the call
-        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_data").open_some()
+        storage_contract = sp.contract(contract_data, self.data.storage_contract, "change_data").open_some()
 
         # Defining the parameters that will be passed to the Storage contract
         params = sp.record(
@@ -226,7 +226,7 @@ class AssetProviderRepository(sp.Contract):
         contract_data = sp.TRecord(provider_id = sp.TString, new_owner_address = sp.TAddress)
 
         # Defining the Storage contract itself and its entry point for the call
-        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_owner").open_some()
+        storage_contract = sp.contract(contract_data, self.data.storage_contract, "change_owner").open_some()
 
         # Defining the parameters that will be passed to the Storage contract
         params = sp.record(
@@ -247,34 +247,13 @@ class AssetProviderRepository(sp.Contract):
         contract_data = sp.TAddress
 
         # Defining the Storage contract itself and its entry point for the call
-        storage_contract = sp.contract(contract_data, self.data.data_contract, "change_logic_contract_address").open_some()
+        storage_contract = sp.contract(contract_data, self.data.storage_contract, "change_logic_contract_address").open_some()
 
         # The contract's own address will be passed as a parameter
         logic_contract_adrress = sp.self_address
 
         # Calling the Storage contract with the parameters we defined
         sp.transfer(logic_contract_adrress, sp.mutez(0), storage_contract)
-
-    # @sp.onchain_view()
-    # def get_asset_providers(self):
-    #     # Defining the parameters' types
-    #     providers = sp.view(
-    #         "get_asset_providers",
-    #         self.data.data_contract,
-    #         sp.none,
-    #         t = sp.TBigMap(
-    #             sp.TString,
-    #             sp.TRecord(
-    #                 provider_id = sp.TString,
-    #                 provider_data = sp.TString,
-    #                 status = sp.TNat,
-    #                 creator_wallet_address = sp.TAddress,
-    #             )
-    #         )
-    #     ).open_some("Invalid view");
-
-    #     # Calling the Storage contract with the parameters we defined
-    #     sp.result(providers)
 
     @sp.onchain_view()
     def get_asset_provider(self, provider_id):
@@ -284,7 +263,7 @@ class AssetProviderRepository(sp.Contract):
         # Defining the parameters' types
         provider = sp.view(
             "get_asset_provider",
-            self.data.data_contract,
+            self.data.storage_contract,
             provider_id,
             t = sp.TRecord(
                 provider_id = sp.TString,
@@ -296,6 +275,7 @@ class AssetProviderRepository(sp.Contract):
 
         # Format result
         result_provider = sp.record(
+            provider_id = provider_id,
             provider_data = provider.provider_data,
             status = self.data.provider_statuses[provider.status],
             creator_wallet_address = provider.creator_wallet_address,
@@ -303,6 +283,10 @@ class AssetProviderRepository(sp.Contract):
 
         # Calling the Storage contract with the parameters we defined
         sp.result(result_provider)
+
+    @sp.onchain_view()
+    def get_storage_contract(self):
+        sp.result(self.data.storage_contract)
 
 @sp.add_test(name = "AssetProviderRepository")
 def test():

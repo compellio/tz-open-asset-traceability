@@ -49,6 +49,7 @@ def test():
     scenario += asset_provider_repo
 
     # Update logic contract address of the storage contract
+
     scenario.h2("Updating storage contract with logic contract address for Asset Provider Repository")
     asset_provider_repo.update_storage_contract_with_address().run(valid = True, sender = certifier_address)
 
@@ -82,8 +83,9 @@ def test():
     scenario += luw_repo_contract
 
     # Update logic contract address of the storage contract
+    
     scenario.h2("Updating storage contract with logic contract address for LUW Repository")
-    luw_repo_contract.update_storage_contract_with_address().run(valid=True, sender=certifier_address)
+    luw_repo_contract.update_storage_contract_with_address().run(valid = True, sender = certifier_address)
 
     # Lambda Contract Instantiation
 
@@ -103,7 +105,7 @@ def test():
     # Update calling contract address of the asset twin contract to allow calls from the lambda contract
 
     scenario.h2("Updating asset twin contract with calling contract address")
-    lambda_contract.change_at_calling_contract().run(valid=True, sender=certifier_address)
+    lambda_contract.change_at_calling_contract().run(valid = True, sender = certifier_address)
 
     # Testing 
 
@@ -183,6 +185,7 @@ def test():
     lambda_contract.set_provider_active(provider_id_1).run(valid = False, sender = operator_B_address)
     lambda_contract.set_provider_status(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.get_asset_provider(provider_id_1).status == "active")
+    scenario.verify(lambda_contract.get_asset_provider(provider_id_1).provider_id == provider_id_1)
     lambda_contract.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address)
     lambda_contract.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address)
 
@@ -318,3 +321,14 @@ def test():
     lambda_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address)
     scenario.verify(lambda_contract.get_active_luw_state(0) == "prepare_to_commit")
     
+    # Misc Testing
+    scenario.h2("Misc Testing")
+    scenario.h3("Get Storage Contract Addresses")
+
+    storage_contracts_record = sp.record(
+        luw_storage_contract_address = luw_contract.address,
+        provider_storage_contract_address = asset_provider.address,
+        asset_twin_storage_contract_address = asset_twin_tracing.address
+    )
+
+    scenario.verify(lambda_contract.get_storage_contracts() == storage_contracts_record)

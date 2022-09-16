@@ -94,10 +94,6 @@ class AssetProvider(sp.Contract):
         # Update logic contract address
         self.data.logic_contract_address = sp.some(new_logic_contract_address)
 
-    # @sp.onchain_view()
-    # def get_asset_providers(self):
-    #     sp.result(self.data.asset_providers)
-
     @sp.onchain_view()
     def get_asset_provider(self, provider_id):
         sp.result(self.data.asset_providers[provider_id])

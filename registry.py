@@ -153,27 +153,6 @@ class Registry(sp.Contract):
         # Calling the Logic contract with the parameters we defined
         sp.transfer(params, sp.mutez(0), logic_contract)
 
-    # @sp.onchain_view()
-    # def get_asset_providers(self):
-    #     # Defining the parameters' types
-    #     providers = sp.view(
-    #         "get_asset_providers",
-    #         self.data.contracts.asset_provider_contract,
-    #         sp.none,
-    #         t = sp.TBigMap(
-    #             sp.TString,
-    #             sp.TRecord(
-    #                 provider_id = sp.TString,
-    #                 provider_data = sp.TString,
-    #                 status = sp.TNat,
-    #                 creator_wallet_address = sp.TAddress,
-    #             )
-    #         )
-    #     ).open_some("Invalid view");
-
-    #     # Calling the Storage contract with the parameters we defined
-    #     sp.result(providers)
-
     @sp.onchain_view()
     def get_asset_provider(self, provider_id):
         # Defining the parameters' types
@@ -185,6 +164,7 @@ class Registry(sp.Contract):
             self.data.contracts.asset_provider_contract,
             provider_id,
             t = sp.TRecord(
+                provider_id = sp.TString,
                 provider_data = sp.TString,
                 creator_wallet_address = sp.TAddress,
                 status = sp.TString
@@ -349,6 +329,7 @@ class Registry(sp.Contract):
             self.data.contracts.luw_contract,
             luw_id,
             t = sp.TRecord(
+                luw_id = sp.TNat,
                 creator_wallet_address = sp.TAddress,
                 provider_id = sp.TString,
                 luw_service_endpoint = sp.TAddress,
@@ -398,6 +379,29 @@ class Registry(sp.Contract):
 
         sp.result(repository_state)
 
+    @sp.onchain_view()
+    def get_storage_contracts(self):
+        luw_contract_address = sp.view(
+            "get_storage_contract",
+            self.data.contracts.luw_contract,
+            sp.unit,
+            t = sp.TAddress
+        ).open_some("Invalid view");
+
+        provider_contract_address = sp.view(
+            "get_storage_contract",
+            self.data.contracts.asset_provider_contract,
+            sp.unit,
+            t = sp.TAddress
+        ).open_some("Invalid view");
+
+        result = sp.record(
+            luw_storage_contract_address = luw_contract_address,
+            provider_storage_contract_address = provider_contract_address,
+            asset_twin_storage_contract_address = self.data.contracts.asset_twin_contract
+        )
+
+        sp.result(result)
 
 @sp.add_test(name = "Registry")
 def test():

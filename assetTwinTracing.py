@@ -18,30 +18,17 @@ class AssetTwinTracing(sp.Contract):
                 ),
                 calling_contract_address = sp.TOption(sp.TAddress),
                 certifier = sp.TAddress
-                # asset_provider_contract = sp.TAddress,
             )
         )
         self.init(
             assets = sp.big_map(),
             calling_contract_address=sp.none,
             certifier=certifier
-            # asset_provider_contract = asset_provider_contract,
         )
 
     ###########
     # Helpers #
     ###########
-
-    # Verify Provider existence
-    # def verify_provider_exists(self, provider_id):
-    #     provider_existance = sp.view(
-    #         "verify_provider_exists",
-    #         self.data.asset_provider_contract,
-    #         provider_id,
-    #         t = sp.TBool
-    #     ).open_some("Invalid view");
-
-    #     return provider_existance
 
     @sp.entry_point
     def register(self, anchor_hash, provider_id, repo_end_point):
@@ -52,8 +39,6 @@ class AssetTwinTracing(sp.Contract):
         # Verifying whether the caller address is the calling contract
         sp.verify(self.data.calling_contract_address.open_some(message="Empty calling_contract_address") == sp.sender,
                   message="Incorrect caller")
-
-        # sp.verify(self.verify_provider_exists(provider_id) == sp.bool(True), message = "Provider " + provider_id + " does not exist")
 
         tracable_record = sp.record(
             asset_repository_endpoint = repo_end_point,

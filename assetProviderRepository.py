@@ -65,7 +65,7 @@ class AssetProviderRepository(sp.Contract):
         sp.set_type(provider_data, sp.TString)
 
         # Check if provider does not exist, does not allow add call otherwise
-        sp.verify(~self.verify_provider_exists(provider_id), message = "Provider did already exists")
+        sp.verify(~self.verify_provider_exists(provider_id), message = "Provider ID already exists")
 
         data_schema = sp.TRecord(
             provider_id = sp.TString,
@@ -99,7 +99,7 @@ class AssetProviderRepository(sp.Contract):
             sp.record(
                 owner_address = owner_address,
             )
-        ), message = "Incorrect owner")
+        ), message = "Non-matching owner address")
 
         # Defining the data expected by the Storage contract
         contract_data = sp.TRecord(provider_id = sp.TString, status = sp.TNat)
@@ -127,7 +127,7 @@ class AssetProviderRepository(sp.Contract):
             sp.record(
                 owner_address = owner_address,
             )
-        ), message = "Incorrect owner")
+        ), message = "Non-matching owner address")
 
         # Defining the data expected by the Storage contract
         contract_data = sp.TRecord(provider_id = sp.TString, status = sp.TNat)
@@ -156,7 +156,7 @@ class AssetProviderRepository(sp.Contract):
             sp.record(
                 owner_address = owner_address,
             )
-        ), message = "Incorrect owner")
+        ), message = "Non-matching owner address")
 
         # Defining the data expected by the Storage contract
         contract_data = sp.TRecord(provider_id = sp.TString, status = sp.TNat)
@@ -183,7 +183,7 @@ class AssetProviderRepository(sp.Contract):
         sp.set_type(parameters.provider_data, sp.TString)
 
         # Check if provider exists, does not allow call otherwise
-        sp.verify(self.verify_provider_exists(parameters.provider_id), message = "Provider did does not exist")
+        sp.verify(self.verify_provider_exists(parameters.provider_id), message = "Provider ID does not exist")
 
         # Update is allowed only from owner
         owner_address = self.get_provider_owner_address(parameters.provider_id)

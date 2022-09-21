@@ -49,7 +49,6 @@ def test():
     scenario += asset_provider_repo
 
     # Update logic contract address of the storage contract
-
     scenario.h2("Updating storage contract with logic contract address for Asset Provider Repository")
     asset_provider_repo.update_storage_contract_with_address().run(valid = True, sender = certifier_address)
 
@@ -83,7 +82,6 @@ def test():
     scenario += luw_repo_contract
 
     # Update logic contract address of the storage contract
-    
     scenario.h2("Updating storage contract with logic contract address for LUW Repository")
     luw_repo_contract.update_storage_contract_with_address().run(valid = True, sender = certifier_address)
 
@@ -110,6 +108,7 @@ def test():
     # Testing 
 
     scenario.h1("Testing")
+    scenario.h2("Expected Successful Cases")
 
     # Asset Provider Testing
 
@@ -134,7 +133,6 @@ def test():
 
     lambda_contract.create_asset_provider(asset_provider_1).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.get_asset_provider(provider_id_1).provider_data == asset_provider_data_A)
-    lambda_contract.create_asset_provider(asset_provider_1).run(valid = False, sender = operator_B_address)
     lambda_contract.create_asset_provider(asset_provider_2).run(valid = True, sender = operator_B_address)
     scenario.verify(lambda_contract.get_asset_provider(provider_id_2).provider_data == asset_provider_data_B)
 
@@ -143,7 +141,6 @@ def test():
         provider_data = asset_provider_data_B
     )
     
-    lambda_contract.set_provider_data(change_asset_provider_1_data).run(valid = False, sender = operator_B_address)
     lambda_contract.set_provider_data(change_asset_provider_1_data).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.get_asset_provider(provider_id_1).provider_data == asset_provider_data_B)
 
@@ -157,7 +154,6 @@ def test():
         new_owner_address = operator_B_address
     )
 
-    lambda_contract.set_provider_owner(change_asset_provider_1_owner_B).run(valid = False, sender = operator_B_address)
     lambda_contract.set_provider_owner(change_asset_provider_1_owner_B).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.get_asset_provider(provider_id_1).creator_wallet_address == operator_B_address)
     lambda_contract.set_provider_owner(change_asset_provider_1_owner_A).run(valid = True, sender = operator_B_address)
@@ -182,12 +178,8 @@ def test():
 
     lambda_contract.set_provider_deprecated(provider_id_1).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.get_asset_provider(provider_id_1).status == "deprecated")
-    lambda_contract.set_provider_active(provider_id_1).run(valid = False, sender = operator_B_address)
     lambda_contract.set_provider_status(asset_provider_status_valid).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.get_asset_provider(provider_id_1).status == "active")
-    scenario.verify(lambda_contract.get_asset_provider(provider_id_1).provider_id == provider_id_1)
-    lambda_contract.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address)
-    lambda_contract.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address)
 
     # Asset Twin Testing
 
@@ -222,15 +214,16 @@ def test():
 
     lambda_contract.register_asset_twin(hash_1_provider_1).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.fetch_asset_twin(hash_1_provider_1).creator_wallet_address == operator_A_address)
-    lambda_contract.register_asset_twin(hash_1_provider_1).run(valid = False, sender = operator_B_address)
     lambda_contract.register_asset_twin(hash_1_provider_2).run(valid = True, sender = operator_A_address)
     lambda_contract.register_asset_twin(hash_2_provider_1).run(valid = True, sender = operator_B_address)
+    lambda_contract.register_asset_twin(hash_1_provider_1).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.fetch_asset_twin(hash_2_provider_1).creator_wallet_address == operator_B_address)
     scenario.verify(sp.is_failing(lambda_contract.fetch_asset_twin(hash_1_provider_invalid)))
 
     # LUW Testing 
 
     scenario.h2("LUW Testing")
+    scenario.h3("LUW Creation")
 
     luw_record = sp.record(
         provider_id = "provider_id",
@@ -259,9 +252,8 @@ def test():
         repository_id = repository_id_1,
     )
 
+    scenario.h3("LUW State Change")
     lambda_contract.add_luw_repository(repository_add_valid_1).run(valid = True, sender = operator_A_address)
-    lambda_contract.add_luw_repository(repository_add_valid_1).run(valid = False, sender = operator_A_address)
-    lambda_contract.add_luw_repository(repository_add_valid_2).run(valid = False, sender = operator_B_address)
     lambda_contract.add_luw_repository(repository_add_valid_2).run(valid = True, sender = operator_A_address)
 
     repository_change_state_valid = sp.record(
@@ -293,12 +285,9 @@ def test():
         state_id = 3
     )
 
+    scenario.h3("LUW Repository Management")
     lambda_contract.change_luw_repository_state(repository_change_state_valid).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.get_luw_repository_state(repository_add_valid_1) == "ready")
-    lambda_contract.change_luw_repository_state(repository_change_state_valid).run(valid = False, sender = operator_B_address)
-    lambda_contract.change_luw_repository_state(repository_change_state_invalid_luw).run(valid = False, sender = operator_A_address)
-    lambda_contract.change_luw_repository_state(repository_change_state_invalid_state).run(valid = False, sender = operator_A_address)
-    lambda_contract.change_luw_repository_state(repository_change_state_invalid_repo).run(valid = False, sender = operator_A_address)
 
     luw_valid_new_state_record = sp.record(
         luw_id = 0,
@@ -315,20 +304,67 @@ def test():
         state_id = 999,
     )
 
-    lambda_contract.change_luw_state(luw_valid_new_state_record).run(valid = False, sender = operator_B_address)
     lambda_contract.change_luw_state(luw_valid_new_state_record).run(valid = True, sender = operator_A_address)
-    lambda_contract.change_luw_state(luw_new_state_invalid_luw_id_record).run(valid = False, sender = operator_A_address)
-    lambda_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address)
     scenario.verify(lambda_contract.get_active_luw_state(0) == "prepare_to_commit")
+
+    scenario.h2("Expected Failed Cases")
+
+    # Asset Provider Testing
+
+    scenario.h2("Asset Provider Testing")
+    scenario.h3("Asset Provider Creation")
+
+    scenario.h4("Adding an existing Provider ID. Expected exception - Provider ID already exists")
+    lambda_contract.create_asset_provider(asset_provider_1).run(valid = False, sender = operator_B_address, exception = "Provider ID already exists")
+
+    scenario.h4("Changing provider data from incorrect wallet address. Expected exception - Non-matching owner address")
+    lambda_contract.set_provider_data(change_asset_provider_1_data).run(valid = False, sender = operator_B_address, exception = "Non-matching owner address")
+
+    scenario.h4("Changing provider owner from incorrect wallet address. Expected exception - Non-matching owner address")
+    lambda_contract.set_provider_owner(change_asset_provider_1_owner_B).run(valid = False, sender = operator_B_address, exception = "Non-matching owner address")
+
+    scenario.h3("Asset Provider Status Change")
+
+    scenario.h4("Changing provider to Active status from incorrect wallet address. Expected exception - Non-matching owner address")
+    lambda_contract.set_provider_active(provider_id_1).run(valid = False, sender = operator_B_address, exception = "Non-matching owner address")
     
-    # Misc Testing
-    scenario.h2("Misc Testing")
-    scenario.h3("Get Storage Contract Addresses")
+    scenario.h4("Changing provider status from incorrect wallet address. Expected exception - Non-matching owner address")
+    lambda_contract.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address, exception = "Non-matching owner address")
+    
+    scenario.h4("Changing provider status of a non-existing provider ID. Expected exception - Non-matching owner address")
+    lambda_contract.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address, exception = "Provider ID does not exist")
 
-    storage_contracts_record = sp.record(
-        luw_storage_contract_address = luw_contract.address,
-        provider_storage_contract_address = asset_provider.address,
-        asset_twin_storage_contract_address = asset_twin_tracing.address
-    )
+    # LUW Testing 
 
-    scenario.verify(lambda_contract.get_storage_contracts() == storage_contracts_record)
+    scenario.h2("LUW Testing")
+
+    scenario.h3("LUW State Change")
+    
+    scenario.h4("Changing LUW state from incorrect wallet address. Expected exception - Non-matching owner address")
+    lambda_contract.change_luw_state(luw_valid_new_state_record).run(valid = False, sender = operator_B_address, exception = "Non-matching owner address")
+    
+    scenario.h4("Changing LUW state for a non-existing LUW ID. Expected exception - LUW ID does not exist")
+    lambda_contract.change_luw_state(luw_new_state_invalid_luw_id_record).run(valid = False, sender = operator_A_address, exception = "LUW ID does not exist")
+    
+    scenario.h4("Changing LUW state to an invalid state ID. Expected exception - Incorrect state ID")
+    lambda_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address, exception = "Incorrect state ID")
+
+    scenario.h3("LUW Repository Management")
+
+    scenario.h4("Adding a Repository to a non-active LUW. Expected exception - LUW is not Active")
+    lambda_contract.add_luw_repository(repository_add_valid_1).run(valid = False, sender = operator_A_address, exception = "LUW is not Active")
+
+    scenario.h4("Adding a Repository to a LUW from an incorrect wallet address. Expected exception - Non-matching owner address")
+    lambda_contract.add_luw_repository(repository_add_valid_2).run(valid = False, sender = operator_B_address, exception = "Non-matching owner address")
+
+    scenario.h4("Changing a LUW Repository state from an incorrect wallet address. Expected exception - Non-matching owner address")
+    lambda_contract.change_luw_repository_state(repository_change_state_valid).run(valid = False, sender = operator_B_address, exception = "Non-matching owner address")
+    
+    scenario.h4("Changing a LUW Repository state for a non-existing LUW ID. Expected exception - LUW ID does not exist")
+    lambda_contract.change_luw_repository_state(repository_change_state_invalid_luw).run(valid = False, sender = operator_A_address, exception = "LUW ID does not exist")
+    
+    scenario.h4("Changing a LUW Repository state to an invalid state ID. Expected exception - Incorrect state ID")
+    lambda_contract.change_luw_repository_state(repository_change_state_invalid_state).run(valid = False, sender = operator_A_address, exception = "Incorrect state ID")
+
+    scenario.h4("Changing a LUW Repository state for a non-existing Repository. Expected exception - Repository ID does not exist")
+    lambda_contract.change_luw_repository_state(repository_change_state_invalid_repo).run(valid = False, sender = operator_A_address, exception = "Repository ID does not exist")

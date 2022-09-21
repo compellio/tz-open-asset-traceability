@@ -131,7 +131,7 @@ class LUWRepository(sp.Contract):
             sp.record(
                 owner_address = owner_address,
             )
-        ), message = "Incorrect owner")
+        ), message = "Non-matching owner address")
 
         # Defining the data that we expect as a return from the Logic contract
         data_schema = sp.TRecord(luw_id = sp.TNat, state_id = sp.TNat)
@@ -158,7 +158,7 @@ class LUWRepository(sp.Contract):
             sp.record(
                 owner_address = owner_address,
             )
-        ), message = "Incorrect owner")
+        ), message = "Non-matching owner address")
 
         luw_state_id = self.get_luw_state(luw_id)
         sp.verify(self.verify_luw_active(
@@ -194,13 +194,13 @@ class LUWRepository(sp.Contract):
             sp.record(
                 owner_address = owner_address,
             )
-        ), message = "Incorrect owner")
+        ), message = "Non-matching owner address")
 
         luw_repositories = self.get_luw_repositories(luw_id)
         sp.verify(luw_repositories.contains(repository_id), message = "Repository ID does not exist")
 
         # Verify state ID exists
-        sp.verify(self.data.repo_states.contains(state_id), message = "Incorrect state")
+        sp.verify(self.data.repo_states.contains(state_id), message = "Incorrect state ID")
 
         # Defining the data that we expect as a return from the Logic contract
         data_schema = sp.TRecord(luw_id = sp.TNat, repository_id = sp.TString, state_id = sp.TNat)

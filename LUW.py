@@ -40,8 +40,8 @@ class LUW(sp.Contract):
         sp.set_type(luw_service_endpoint, sp.TAddress)
 
         # Verifying whether the calling contract address is the logic contract
-        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
-                  message="Incorrect caller")
+        sp.verify(self.data.logic_contract_address.open_some(message = "Empty logic_contract_address") == sp.sender,
+            message = "Incorrect caller")
 
         new_luw_record = sp.record(
             creator_wallet_address = sp.source,
@@ -60,8 +60,8 @@ class LUW(sp.Contract):
         sp.set_type(state_id, sp.TNat)
 
         # Verifying whether the calling contract address is the logic contract
-        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
-                  message="Incorrect caller")
+        sp.verify(self.data.logic_contract_address.open_some(message = "Empty logic_contract_address") == sp.sender,
+            message = "Incorrect caller")
 
         sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
 
@@ -83,14 +83,14 @@ class LUW(sp.Contract):
         self.data.luw_map[luw_id] = new_luw_record
 
     @sp.entry_point
-    def add_repository(self, luw_id, repository_id, state_id = 1):
+    def add_repository(self, luw_id, repository_id, state_id):
         sp.set_type(luw_id, sp.TNat)
         sp.set_type(repository_id, sp.TString)
         sp.set_type(state_id, sp.TNat)
 
         # Verifying whether the calling contract address is the logic contract
-        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
-                  message="Incorrect caller")
+        sp.verify(self.data.logic_contract_address.open_some(message = "Empty logic_contract_address") == sp.sender,
+            message="Incorrect caller")
 
         sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
 
@@ -119,8 +119,8 @@ class LUW(sp.Contract):
         sp.set_type(state_id, sp.TNat)
 
         # Verifying whether the calling contract address is the logic contract
-        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender,
-                  message="Incorrect caller")
+        sp.verify(self.data.logic_contract_address.open_some(message = "Empty logic_contract_address") == sp.sender,
+            message = "Incorrect caller")
 
         sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
 
@@ -152,11 +152,13 @@ class LUW(sp.Contract):
 
     @sp.onchain_view()
     def fetch(self, luw_id):
+        sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
         sp.result(self.data.luw_map[luw_id])
 
     @sp.onchain_view()
     def get_active_luw_state(self, luw_id):
         sp.set_type(luw_id, sp.TNat)
+        sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
         
         luw = self.data.luw_map[luw_id]
         last_state = luw.state_history[sp.len(luw.state_history)]
@@ -164,14 +166,17 @@ class LUW(sp.Contract):
 
     @sp.onchain_view()
     def get_luw_owner_address(self, luw_id):
+        sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
         sp.result(self.data.luw_map[luw_id].creator_wallet_address)
 
     @sp.onchain_view()
     def get_luw_repositories(self, luw_id):
+        sp.verify(self.data.luw_map.contains(luw_id), message = "LUW ID does not exist")
         sp.result(self.data.luw_map[luw_id].repository_endpoints)
 
     @sp.onchain_view()
     def get_luw_repository_state(self, params):
+        sp.verify(self.data.luw_map.contains(params.luw_id), message = "LUW ID does not exist")
         sp.result(self.data.luw_map[params.luw_id].repository_endpoints[params.repository_id])
 
 @sp.add_test(name = "LUW")

@@ -291,6 +291,8 @@ class AssetProviderRepository(sp.Contract):
 @sp.add_test(name = "AssetProviderRepository")
 def test():
     sp.add_compilation_target("assetProviderRepository",
-        AssetProviderRepository(sp.address("KT1_contract_address"),
-            sp.address('tz1_certifier_address'))
+        AssetProviderRepository(
+            sp.address('KT1_contract_address'),
+            sp.address('tz1_certifier_address')
+        )
     )

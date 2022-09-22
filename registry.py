@@ -409,10 +409,10 @@ def test():
     sp.add_compilation_target("registry",
         Registry(
             sp.record(
-                asset_provider_contract = sp.address('KT1GP5bMwLhtZPpvrzFfJMRuk4qzUAJtr7ti'),
-                asset_twin_contract = sp.address('KT1Xqffe6ea3tip7BnGFGmJfDZRzwdwopDQZ'),
-                luw_contract = sp.address('KT1XrwTjXnHiy9caM266pNRmZ7Vdk1G4Vt2f'),
+                asset_provider_contract = sp.address('KT1_contract_address'),
+                asset_twin_contract = sp.address('KT1_contract_address'),
+                luw_contract = sp.address('KT1_contract_address'),
             ),
-            sp.address('tz1WM1wDM4mdtD3qMiELJSgbB14ZryyHNu7P')
+            sp.address('tz1_certifier_address')
         )
     )

@@ -8,7 +8,7 @@ const delay = t => new Promise(resolve => setTimeout(resolve, t));
 function initUI() {
     updateUISetting({
         provider: "https://ghostnet.ecadinfra.com",
-        lambdaContractAddress: "KT1LJFuXpPq1NuTYTwgbibM9mL66Kk7rN3Ke",
+        lambdaContractAddress: "KT1UaB5DY2MUkCEXY3TqjN7K8PDHpbHUASGQ",
     });
 
     // setup UI actions
@@ -619,7 +619,8 @@ function init_sim() {
     $("connection").remove()
     $(".actions-container").html("")
     $("#btn_next_step").hide();
-    $("#btn_init_sim").addClass("disable");
+    $("#sim-megacontainer").show();
+    $("#btn_init_sim").addClass("disabled");
 
     current_scenario = []
     current_scenario = current_scenario.concat(scenario_array)
@@ -705,10 +706,6 @@ function init_sim() {
         'within': "#sim-connections-layer",
     });
 
-    // $('#sim-luw').css('transform', 'scale(1.1)');
-    // $('#sim-provider').css('transform', 'scale(1.1)');
-    // $('#sim-asset').css('transform', 'scale(1.1)');
-
     showSimResultAlert("Preparing simulation", "info");
     prepare_simulation_data()
 }
@@ -788,7 +785,7 @@ function prepare_simulation_data() {
 
             showSimResultAlert('Simulation ready, click on "Next step" button to continue', "success");
             $('#btn_init_sim').text("Restart Simulation")
-            $("#btn_init_sim").removeClass("disable");
+            $("#btn_init_sim").removeClass("disabled");
 
             $('#btn_next_step').show()
         })
@@ -823,7 +820,7 @@ function luw_initiation() {
                     return op.confirmation(1).then(() => op);
                 })
                 .then((data) => {
-                    simLuwId = data.results[0].metadata.internal_operation_results[1].result.storage.args[0]["int"] - 1
+                    simLuwId = data.results[0].metadata.internal_operation_results[1].result.storage.args[1].args[0]["int"] - 1
                     appendSimResultAlert(`The LUW with ID ${simLuwId} has been created <a target="_blank" href="${browser_operations_url + data.hash}">See Operation</a>`)
                     $('#sim-luw .actions-container').append(
                         `<div class="card">

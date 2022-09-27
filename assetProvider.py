@@ -28,14 +28,14 @@ class AssetProvider(sp.Contract):
     @sp.entry_point
     def create_asset_provider(self, parameters):
         # Verifying whether the calling contract address is the logic contract
-        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message="Incorrect caller")
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message = "Incorrect caller")
 
         self.data.asset_providers[parameters.provider_id] = parameters
 
     @sp.entry_point
     def change_status(self, parameters):
         # Verifying whether the calling contract address is the logic contract
-        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message="Incorrect caller")
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message = "Incorrect caller")
 
         # Defining the parameters' types
         sp.set_type(parameters.provider_id, sp.TString)
@@ -51,14 +51,11 @@ class AssetProvider(sp.Contract):
     @sp.entry_point
     def change_data(self, parameters):
         # Verifying whether the calling contract address is the logic contract
-        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message="Incorrect caller")
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message = "Incorrect caller")
 
         # Defining the parameters' types
         sp.set_type(parameters.provider_id, sp.TString)
         sp.set_type(parameters.provider_data, sp.TString)
-
-        # Verifying whether the calling contract address is the logic contract
-        # sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message = "Incorrect caller")
 
         provider_data = self.data.asset_providers[parameters.provider_id]
         
@@ -70,14 +67,11 @@ class AssetProvider(sp.Contract):
     @sp.entry_point
     def change_owner(self, parameters):
         # Verifying whether the calling contract address is the logic contract
-        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message="Incorrect caller")
+        sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message = "Incorrect caller")
 
         # Defining the parameters' types
         sp.set_type(parameters.provider_id, sp.TString)
         sp.set_type(parameters.new_owner_address, sp.TAddress)
-
-        # Verifying whether the calling contract address is the logic contract
-        # sp.verify(self.data.logic_contract_address.open_some(message="Empty logic_contract_address") == sp.sender, message = "Incorrect caller")
 
         provider_data = self.data.asset_providers[parameters.provider_id]
         
@@ -94,12 +88,9 @@ class AssetProvider(sp.Contract):
         # Update logic contract address
         self.data.logic_contract_address = sp.some(new_logic_contract_address)
 
-    # @sp.onchain_view()
-    # def get_asset_providers(self):
-    #     sp.result(self.data.asset_providers)
-
     @sp.onchain_view()
     def get_asset_provider(self, provider_id):
+        sp.verify(self.data.asset_providers.contains(provider_id), message = "Provider ID does not exist")
         sp.result(self.data.asset_providers[provider_id])
 
     @sp.onchain_view()
@@ -108,6 +99,7 @@ class AssetProvider(sp.Contract):
 
     @sp.onchain_view()
     def get_provider_owner_address(self, provider_id):
+        sp.verify(self.data.asset_providers.contains(provider_id), message = "Provider ID does not exist")
         sp.result(self.data.asset_providers[provider_id].creator_wallet_address)
 
 @sp.add_test(name = "AssetProvider")

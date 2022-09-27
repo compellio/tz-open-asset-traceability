@@ -8,7 +8,7 @@ const delay = t => new Promise(resolve => setTimeout(resolve, t));
 function initUI() {
     updateUISetting({
         provider: "https://ghostnet.ecadinfra.com",
-        lambdaContractAddress: "KT1LJFuXpPq1NuTYTwgbibM9mL66Kk7rN3Ke",
+        lambdaContractAddress: "KT1UaB5DY2MUkCEXY3TqjN7K8PDHpbHUASGQ",
     });
 
     // setup UI actions
@@ -74,7 +74,7 @@ function initUI() {
 
     $("#btn_state_luw_repo_open").click(() => add_luw_repository_state($("#change_luw_repo_state_id"), $("#change_luw_repo_state_repo_id"), 1));
     $("#btn_state_luw_repo_ready").click(() => add_luw_repository_state($("#change_luw_repo_state_id"), $("#change_luw_repo_state_repo_id"), 2));
-    $("#btn_state_luw_repo_commited").click(() => add_luw_repository_state($("#change_luw_repo_state_id"), $("#change_luw_repo_state_repo_id"), 3));
+    $("#btn_state_luw_repo_committed").click(() => add_luw_repository_state($("#change_luw_repo_state_id"), $("#change_luw_repo_state_repo_id"), 3));
     $("#btn_state_luw_repo_rollbacked").click(() => add_luw_repository_state($("#change_luw_repo_state_id"), $("#change_luw_repo_state_repo_id"), 4));
 
     $("#btn_fetch_luw").click(() => fetch_luw(
@@ -123,17 +123,17 @@ function showResultAlert(text, link = null, type = "info") {
     $("#alert-result").html(html)
 }
 
-function showSimResultAlert(text, type = "info") {
+function showSimResultAlert(text, type = "info", $title = false) {
     let html = ""
-    html += `<div class="w-100">${text}</div>`
+    html += `<div class="w-100 ${$title === true ? 'h3' : 'h6' }">${text}</div>`
 
     $("#alert-sim").attr('class', `alert alert-${type}`);
     $("#alert-sim").html(html)
 }
 
-function appendSimResultAlert(text) {
+function appendSimResultAlert(text, $title = false) {
     var $alert = $('#alert-sim'); 
-    let html = `<div class="w-100">${text}</div>`
+    let html = `<div class="w-100 ${$title === true ? 'h3' : 'h6' }">${text}</div>`
 
     $alert.append(html)
     $alert.animate({scrollTop: $alert.height()}, 1000);
@@ -177,6 +177,7 @@ let scenario_array = [
     "persist_proof_residence_address",
     "register_proof_residence_address",
     "fetch_proof_residence_address",
+    "bank_register_proof_residence_address",
     "KYC_check",
     "request_additional_info",
     "update_proof_address",
@@ -184,6 +185,7 @@ let scenario_array = [
     "prepare_to_commit",
     "update_repositories",
     "commit",
+    "wrapup",
 ]
 
 var current_scenario
@@ -619,27 +621,12 @@ function init_sim() {
     $("connection").remove()
     $(".actions-container").html("")
     $("#btn_next_step").hide();
-    $("#btn_init_sim").addClass("disable");
+    $("#sim-megacontainer").show();
+    $("#btn_init_sim").addClass("disabled");
 
     current_scenario = []
     current_scenario = current_scenario.concat(scenario_array)
 
-    jQuery('#sim-customer').connections({
-        'to': '#sim-bank',
-        'class': 'con-customer-bank con-inactive animate__flash animate__slow animate__infinite',
-        'css': {
-            border: '4px solid'
-        },
-        'within': "#sim-connections-layer",
-    });
-    jQuery('#sim-bank').connections({
-        'to': '#sim-coordinator',
-        'class': 'con-bank-coordinator con-inactive animate__flash animate__slow animate__infinite',
-        'css': {
-            border: '4px solid'
-        },
-        'within': "#sim-connections-layer",
-    });
     jQuery('#sim-coordinator').connections({
         'to': '#sim-att',
         'class': 'con-coordinator-att con-inactive animate__flash animate__slow animate__infinite',
@@ -648,17 +635,9 @@ function init_sim() {
         },
         'within': "#sim-connections-layer",
     });
-    jQuery('#sim-coor-left').connections({
-        'to': '#sim-ivc',
-        'class': 'con-coordinator-ivc con-inactive animate__flash animate__slow animate__infinite',
-        'css': {
-            border: '4px solid'
-        },
-        'within': "#sim-connections-layer",
-    });
-    jQuery('#sim-coor-right').connections({
-        'to': '#sim-utility',
-        'class': 'con-coordinator-utility con-inactive animate__flash animate__slow animate__infinite',
+    jQuery('#sim-bank').connections({
+        'to': '#sim-coordinator',
+        'class': 'con-bank-coordinator con-inactive invisible animate__flash animate__slow animate__infinite',
         'css': {
             border: '4px solid'
         },
@@ -672,9 +651,33 @@ function init_sim() {
         },
         'within': "#sim-connections-layer",
     });
+    jQuery('#sim-bank').connections({
+        'to': '#sim-bank-repo',
+        'class': 'con-bank-repo con-inactive animate__flash animate__slow animate__infinite',
+        'css': {
+            border: '4px solid'
+        },
+        'within': "#sim-connections-layer",
+    });
     jQuery('#sim-utility').connections({
         'to': '#sim-utility-repo',
         'class': 'con-utility-repo con-inactive animate__flash animate__slow animate__infinite',
+        'css': {
+            border: '4px solid'
+        },
+        'within': "#sim-connections-layer",
+    });
+    jQuery('#sim-coor-left').connections({
+        'to': '#sim-ivc',
+        'class': 'con-coordinator-ivc con-inactive invisible animate__flash animate__slow animate__infinite',
+        'css': {
+            border: '4px solid'
+        },
+        'within': "#sim-connections-layer",
+    });
+    jQuery('#sim-coor-right').connections({
+        'to': '#sim-utility',
+        'class': 'con-coordinator-utility con-inactive invisible animate__flash animate__slow animate__infinite',
         'css': {
             border: '4px solid'
         },
@@ -704,10 +707,6 @@ function init_sim() {
         },
         'within': "#sim-connections-layer",
     });
-
-    // $('#sim-luw').css('transform', 'scale(1.1)');
-    // $('#sim-provider').css('transform', 'scale(1.1)');
-    // $('#sim-asset').css('transform', 'scale(1.1)');
 
     showSimResultAlert("Preparing simulation", "info");
     prepare_simulation_data()
@@ -788,20 +787,23 @@ function prepare_simulation_data() {
 
             showSimResultAlert('Simulation ready, click on "Next step" button to continue', "success");
             $('#btn_init_sim').text("Restart Simulation")
-            $("#btn_init_sim").removeClass("disable");
+            $("#btn_init_sim").removeClass("disabled");
 
             $('#btn_next_step').show()
         })
 }
 
 function loan_request() {
-    showSimResultAlert('Customer requesting a loan from a Bank', "info");
-    $('.con-customer-bank').addClass("con-active animate__animated")
+    showSimResultAlert('1. Loan Request', "info", true);
+    appendSimResultAlert('Customer requesting a loan from a Bank', "info");
+    $('#sim-bank').addClass("sim-con-active animate__animated")
 }
 
 function luw_initiation() {
     disableNextStep()
-    showSimResultAlert('The Bank application sends a request for a new LUW to the Coordinator', "info");
+    showSimResultAlert('2. LUW Initiation', "info", true);
+    appendSimResultAlert('The Bank application sends a request for a new LUW to the Coordinator', "info");
+    $('.con-bank-coordinator').removeClass("invisible")
     $('.con-bank-coordinator').addClass("con-active animate__animated")
 
     delay(2000)
@@ -823,7 +825,7 @@ function luw_initiation() {
                     return op.confirmation(1).then(() => op);
                 })
                 .then((data) => {
-                    simLuwId = data.results[0].metadata.internal_operation_results[1].result.storage.args[0]["int"] - 1
+                    simLuwId = data.results[0].metadata.internal_operation_results[1].result.storage.args[1].args[0]["int"] - 1
                     appendSimResultAlert(`The LUW with ID ${simLuwId} has been created <a target="_blank" href="${browser_operations_url + data.hash}">See Operation</a>`)
                     $('#sim-luw .actions-container').append(
                         `<div class="card">
@@ -834,6 +836,19 @@ function luw_initiation() {
 
                                 </div>
                             </div>
+                        </div>`
+                    )
+
+                    
+
+                    return delay(500);
+                })
+                .then(() => {
+                    appendSimResultAlert(`3. The ID of the new LUW (${simLuwId}) is returned to the Bank for future transactions`)
+
+                    $('#sim-bank .actions-container').append(
+                        `<div class="card">
+                            LUW (ID: ${simLuwId})
                         </div>`
                     )
 
@@ -854,11 +869,25 @@ function request_proof_residence_address() {
 
     delay(4000)
         .then(() => {
-            appendSimResultAlert("The Bank application sends an outside request to an Identity Verification Company, for the Customer's Proof of Residence. The LUW's ID is contained in the request");
+            appendSimResultAlert("4. Request Proof of Residence", true);
+            appendSimResultAlert("The Bank application sends an outside request to an Identity Verification Company, for the Customer's Proof of Residence. The Coordinator endpoint and LUW ID are contained in the request");
+            $('#sim-utility .actions-container').append(
+                `<div class="card">
+                    LUW (ID: ${simLuwId})
+                </div>`
+            )
+            $('.con-coordinator-utility').removeClass("invisible")
             $('#sim-utility').addClass("sim-con-active animate__animated")
             return delay(4000)
         }).then(() => {
-            appendSimResultAlert("It also sends an outside request to an Utility Company, for the Customer's Proof of Address. The LUW's ID is also contained in the request");
+            appendSimResultAlert("5. Request Proof of Address", true);
+            appendSimResultAlert("It also sends an outside request to an Utility Company, for the Customer's Proof of Address. The Coordinator endpoint and the LUW ID are also contained in the request");
+            $('#sim-ivc .actions-container').append(
+                `<div class="card">
+                    LUW (ID: ${simLuwId})
+                </div>`
+            )
+            $('.con-coordinator-ivc').removeClass("invisible")
             $('#sim-ivc').addClass("sim-con-active animate__animated")
             return delay(500)
         }).then(() => {
@@ -868,9 +897,12 @@ function request_proof_residence_address() {
 
 function persist_proof_residence_address() {
     disableNextStep()
+    showSimResultAlert("6-7, 10-11. Persist and Bind Proofs", "info", true);
+
     $('.con-ivc-repo').addClass("con-active animate__animated")
     $('.con-utility-repo').addClass("con-active animate__animated")
-    showSimResultAlert('The Utility and Identity Verification companies, persist the requested data in their respective repositories', "info");
+
+    appendSimResultAlert('The Utility and Identity Verification companies, persist the requested data in their respective repositories');
 
     $('#sim-ivc-repo .actions-container').append(
         `<div class="card">
@@ -952,7 +984,7 @@ function persist_proof_residence_address() {
 }
 
 function register_proof_residence_address() {
-    showSimResultAlert('Asynchronously, the Proof of Residence and Address hashes are registered to the Asset Twin Tracing contract, either directly or part of a Merkle Tree', "info");
+    showSimResultAlert('The Proof of Residence and Address hashes are registered to the Asset Twin Tracing contract, either directly or part of a Merkle Tree', "info");
     $('.con-ivc-repo').addClass("con-active animate__animated")
     $('.con-utility-repo').addClass("con-active animate__animated")
     $('#sim-ivc').addClass("sim-con-active animate__animated")
@@ -965,7 +997,7 @@ function register_proof_residence_address() {
                 Asset Twins
                 <div class="card-list">
                     <div class="card">Proof of Residence Hash</div>
-                    <div class="card">Proof of Addrress Hash</div>
+                    <div class="card">Proof of Address Hash</div>
                 </div>
             </div>
         </div>`
@@ -973,7 +1005,8 @@ function register_proof_residence_address() {
 }
 
 function fetch_proof_residence_address() {
-    showSimResultAlert('The Bank application fetches the requested info', "info");
+    showSimResultAlert("8, 12. Fetch Proofs", "info", true);
+    appendSimResultAlert('The Bank application fetches the requested info');
     $('.con-coordinator-ivc').addClass("con-active animate__animated")
     $('.con-coordinator-utility').addClass("con-active animate__animated")
     $('.con-ivc-repo').addClass("con-active animate__animated")
@@ -981,10 +1014,28 @@ function fetch_proof_residence_address() {
     $('.con-bank-coordinator').addClass("con-active animate__animated")
 }
 
+function bank_register_proof_residence_address() {
+    showSimResultAlert("9, 13. Register KYC Documents", "info", true);
+    appendSimResultAlert('The Bank application registers the fetched documents in its own repository');
+    $('.con-bank-repo').addClass("con-active animate__animated")
+    $('#sim-bank-repo .actions-container').append(
+        `<div class="card">
+            <div class="card-body">
+                Asset Twins
+                <div class="card-list">
+                    <div class="card">Proof of Residence Hash</div>
+                    <div class="card">Proof of Address Hash</div>
+                </div>
+            </div>
+        </div>`
+    )
+}
+
 function KYC_check() {
     disableNextStep()
     $('#sim-bank').addClass("sim-con-active animate__animated")
-    showSimResultAlert('Having the required info, the Bank performs its KYC functions', "info");
+    showSimResultAlert('14 KYC Check', "info", true);
+    appendSimResultAlert('Having the required info, the Bank performs its KYC functions');
 
     delay(4000)
         .then(() => {
@@ -996,14 +1047,17 @@ function KYC_check() {
 }
 
 function request_additional_info() {
-    showSimResultAlert("The Bank will request some additional info from the Utility company about the Customer's address", "info");
+    showSimResultAlert('15. Request additional info', "info", true);
+    appendSimResultAlert("The Bank will request some additional info from the Utility company about the Customer's address");
+    
     $('#sim-bank').addClass("sim-con-active animate__animated")
     $('#sim-utility').addClass("sim-con-active animate__animated")
 }
 
 function update_proof_address() {
     disableNextStep()
-    showSimResultAlert('The Utility company will update the Proof of Address', "info");
+    showSimResultAlert('15. Request additional info', "info", true);
+    appendSimResultAlert('The Utility company will update the Proof of Address');
     $('#sim-utility').addClass("sim-con-active animate__animated")
     $('#sim-utility-repo').addClass("sim-con-active animate__animated")
     $('#sim-utility-repo .actions-container').append('<div class="card">Updated Proof of Address</div>')
@@ -1011,6 +1065,7 @@ function update_proof_address() {
     
     delay(4000)
         .then(() => {
+            appendSimResultAlert('16. Update Proof of Address', true);
             appendSimResultAlert("Asynchronously, the updated Proof of Address will be registered on the Asset Twin Tracing contract");
             $('.con-utility-repo').addClass("con-active animate__animated")
             $('.con-coordinator-utility').addClass("con-active animate__animated")
@@ -1025,15 +1080,20 @@ function update_proof_address() {
 }
 
 function fetch_updated_proof_address() {
-    showSimResultAlert('The Bank application requests the updated info ', "info");
+    showSimResultAlert('17-18. Fetch and Update Proof of Address', "info", true);
+
+    appendSimResultAlert('The Bank application requests the updated Proof of Address and registers it');
     $('.con-coordinator-utility').addClass("con-active animate__animated")
     $('.con-utility-repo').addClass("con-active animate__animated")
     $('.con-bank-coordinator').addClass("con-active animate__animated")
+    $('#sim-bank .actions-container .card-list').append('<div class="card">Updated Proof of Address Hash </div>')
 }
 
 function prepare_to_commit() {
     disableNextStep()
-    showSimResultAlert('Having performed the KYC checks, the Bank application contacts the Coordinator to commit the LUW', "info");
+
+    showSimResultAlert('19. Prepare to commit', "info", true);
+    appendSimResultAlert('Having performed the KYC checks, the Bank application contacts the Coordinator to commit the LUW');
     $('.con-bank-coordinator').addClass("con-active animate__animated")
 
     delay(4000)
@@ -1119,7 +1179,9 @@ function update_repositories() {
 
 function commit() {
     disableNextStep()
-    showSimResultAlert('The LUW will now be commited', "info");
+
+    showSimResultAlert('20. Commit', "info", true);
+    appendSimResultAlert('The LUW will now be committed');
     $('#sim-luw').addClass("sim-con-active animate__animated")
 
     delay(500)
@@ -1144,6 +1206,21 @@ function commit() {
                     showSimResultAlert(error.message, null, "danger");
                 });
         }).then(() => {
+            enableNextStep()
+        });
+}
+
+function wrapup() {
+    disableNextStep()
+
+    showSimResultAlert('21, 22-23. KYC Completion and Fee Payment', "info", true);
+    appendSimResultAlert('With KYC completed, the banks sends the result back to the customer, at the same time paying the required fees to the Verification and Utility companies');
+    $('#sim-bank').addClass("sim-con-active animate__animated")
+    $('#sim-utility').addClass("sim-con-active animate__animated")
+    $('#sim-ivc').addClass("sim-con-active animate__animated")
+
+    delay(500)
+        .then(() => {
             appendSimResultAlert('The simulation is now complete. If you want to rerun the simulation, click on the "Initiate Simulation" button');
             $('#btn_next_step').hide()
             enableNextStep()

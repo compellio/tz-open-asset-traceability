@@ -23,8 +23,7 @@
                         <a href="#" class="btn btn-primary" id="btn_connect">Connect Wallet</a>
                     </div>
 
-                    <ul id="settings-pills" class="nav nav-pills ms-auto" id="pills-tab" role="tablist">
-                        <!-- <ul id="settings-pills" class="d-none nav nav-pills ms-auto" id="pills-tab" role="tablist"> -->
+                    <ul id="settings-pills" class="d-none nav nav-pills ms-auto" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="pills-asset-twin-tracing-tab" data-bs-toggle="pill"
                                 data-bs-target="#pills-asset-twin-tracing" type="button" role="tab"
@@ -270,44 +269,44 @@
                             <div id="alert-sim" style="width: 100%;" class="alert alert-info">Click on the "Initiate Simulation" button</div>
                             <a href="#" id="btn_next_step" style="display: none;" class="btn btn-primary mt-2 me-2">Next Step</a>
                             <a href="#" id="btn_init_sim" class="btn btn-primary mt-2">Initiate Simulation</a>
-                            <div id="sim-megacontainer" class="position-relative">
+                            <div id="sim-megacontainer" class="position-relative mt-4" style="display: none;">
                                 <div>
-                                    <div id="sim-top-layer" class="d-flex justify-content-start w-100" style="height: 100px;">
-                                        <div id="sim-customer" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-2 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
-                                            <div>Customer</div>
+                                    <div id="sim-mid-top-layer" class="d-flex justify-content-start w-100" style="min-height: 100px;">
+                                        <div id="sim-ivc-repo" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-2 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>IVC Repository</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                        <div id="sim-bank-repo" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Bank Repository</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                        <div id="sim-utility-repo" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Utility Company Repo</div>
+                                            <div class="actions-container"></div>
+                                        </div>
+                                    </div>
+                                    <div id="sim-top-layer" class="d-flex justify-content-start w-100" style="height: 100px; margin-top: 5rem;">
+                                        <div id="sim-ivc" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-2 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                            <div>Identity Verification Company</div>
                                             <div class="actions-container"></div>
                                         </div>
                                         <div id="sim-bank" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
                                             <div>Bank</div>
                                             <div class="actions-container"></div>
                                         </div>
-                                    </div>
-                                    <div id="sim-mid-top-layer" class="d-flex justify-content-start w-100" style="min-height: 100px; margin-top: 5rem;">
-                                        <div id="sim-coordinator" class="sim-container animate__pulse animate__slow animate__infinite col-4 offset-4 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2 position-relative">
-                                            <div>Coordinator</div>
-                                            <div class="actions-container"></div>
-                                            <div class="d-flex w-100 position-absolute invisible bottom-0">
-                                                <div id="sim-coor-left" class="w-50"></div>
-                                                <div id="sim-coor-right" class="w-50"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="sim-mid-layer" class="d-flex justify-content-start w-100" style="min-height: 100px; margin-top: 5rem;">
-                                        <div id="sim-ivc-repo" class="sim-container animate__pulse animate__slow animate__infinite col-2 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
-                                            <div>IVC Repository</div>
-                                            <div class="actions-container"></div>
-                                        </div>
-                                        <div id="sim-ivc" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
-                                            <div>Identity Verification Company</div>
-                                            <div class="actions-container"></div>
-                                        </div>
-                                        <div id="sim-utility" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-2 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
+                                        <div id="sim-utility" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
                                             <div>Utility Company</div>
                                             <div class="actions-container"></div>
                                         </div>
-                                        <div id="sim-utility-repo" class="sim-container animate__pulse animate__slow animate__infinite col-2 offset-1 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2">
-                                            <div>Utility Company Repo</div>
+                                    </div>
+                                    <div id="sim-mid-layer" class="d-flex justify-content-start w-100" style="min-height: 100px; margin-top: 5rem;">
+                                        <div id="sim-coordinator" class="sim-container animate__pulse animate__slow animate__infinite col-4 offset-4 d-flex flex-column justify-content-center align-items-center border border-dark border-2 rounded-2 position-relative">
+                                            <div>Coordinator</div>
                                             <div class="actions-container"></div>
+                                            <div class="d-flex w-100 justify-content-between position-absolute invisible top-0">
+                                                <div id="sim-coor-left" style="width: 30%;"></div>
+                                                <div id="sim-coor-right" style="width: 30%;"></div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div id="sim-mid-bottom-layer" class="d-flex justify-content-start w-100" style="min-height: 100px; margin-top: 5rem;">
@@ -360,9 +359,9 @@
         </div>
     </div>
     </div>
-    <!-- <div id="app-overlay" class="d-flex justify-content-center align-items-center bg-light fs-1 position-absolute top-0 left-0 w-100 h-100">
+    <div id="app-overlay" class="d-flex justify-content-center align-items-center bg-light fs-1 position-absolute top-0 left-0 w-100 h-100">
         <div>Activate wallet before proceeding</div>
-    </div> -->
+    </div>
 
 </body>
 

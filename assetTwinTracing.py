@@ -13,35 +13,23 @@ class AssetTwinTracing(sp.Contract):
                         sp.TRecord(
                             asset_repository_endpoint = sp.TString,
                             creator_wallet_address = sp.TAddress,
+                            registration_timestamps = sp.TList(sp.TTimestamp)
                         )
                     )
                 ),
                 calling_contract_address = sp.TOption(sp.TAddress),
                 certifier = sp.TAddress
-                # asset_provider_contract = sp.TAddress,
             )
         )
         self.init(
             assets = sp.big_map(),
-            calling_contract_address=sp.none,
-            certifier=certifier
-            # asset_provider_contract = asset_provider_contract,
+            calling_contract_address = sp.none,
+            certifier = certifier
         )
 
     ###########
     # Helpers #
     ###########
-
-    # Verify Provider existence
-    # def verify_provider_exists(self, provider_id):
-    #     provider_existance = sp.view(
-    #         "verify_provider_exists",
-    #         self.data.asset_provider_contract,
-    #         provider_id,
-    #         t = sp.TBool
-    #     ).open_some("Invalid view");
-
-    #     return provider_existance
 
     @sp.entry_point
     def register(self, anchor_hash, provider_id, repo_end_point):
@@ -50,23 +38,24 @@ class AssetTwinTracing(sp.Contract):
         sp.set_type(repo_end_point, sp.TString)
 
         # Verifying whether the caller address is the calling contract
-        sp.verify(self.data.calling_contract_address.open_some(message="Empty calling_contract_address") == sp.sender,
-                  message="Incorrect caller")
-
-        # sp.verify(self.verify_provider_exists(provider_id) == sp.bool(True), message = "Provider " + provider_id + " does not exist")
+        sp.verify(self.data.calling_contract_address.open_some(message = "Empty calling contract address") == sp.sender,
+            message = "Incorrect caller")
 
         tracable_record = sp.record(
             asset_repository_endpoint = repo_end_point,
             creator_wallet_address = sp.source,
+            registration_timestamps = sp.list([sp.timestamp_from_utc_now()], t = sp.TTimestamp),
         )
 
-        sp.if (self.data.assets.contains(anchor_hash) == False):
-            self.data.assets[anchor_hash] = {provider_id : tracable_record}
-        sp.else:
-            sp.if (~self.data.assets[anchor_hash].contains(provider_id)):
-                self.data.assets[anchor_hash][provider_id] = tracable_record
+        sp.if (self.data.assets.contains(anchor_hash) == True):
+            sp.if (self.data.assets[anchor_hash].contains(provider_id) == True):
+                new_timestamps = sp.cons(sp.timestamp_from_utc_now(), self.data.assets[anchor_hash][provider_id].registration_timestamps)
+                with sp.modify_record(self.data.assets[anchor_hash][provider_id], "data") as data:
+                    data.registration_timestamps = new_timestamps
             sp.else:
-                sp.failwith("Hash " + anchor_hash + " already exists for provider " + provider_id)
+                sp.update_map(self.data.assets[anchor_hash], provider_id, sp.some(tracable_record))
+        sp.else:
+            self.data.assets[anchor_hash] = {provider_id : tracable_record}
 
     @sp.onchain_view()
     def fetch_asset_twin(self, parameters):

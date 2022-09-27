@@ -136,6 +136,8 @@ def test():
     lambda_contract.create_asset_provider(asset_provider_2).run(valid = True, sender = operator_B_address)
     scenario.verify(lambda_contract.get_asset_provider(provider_id_2).provider_data == asset_provider_data_B)
 
+    scenario.h3("Asset Provider Management")
+
     change_asset_provider_1_data = sp.record(
         provider_id = provider_id_1,
         provider_data = asset_provider_data_B
@@ -252,7 +254,7 @@ def test():
         repository_id = repository_id_1,
     )
 
-    scenario.h3("LUW State Change")
+    scenario.h3("LUW Repository Management")
     lambda_contract.add_luw_repository(repository_add_valid_1).run(valid = True, sender = operator_A_address)
     lambda_contract.add_luw_repository(repository_add_valid_2).run(valid = True, sender = operator_A_address)
 
@@ -285,7 +287,6 @@ def test():
         state_id = 3
     )
 
-    scenario.h3("LUW Repository Management")
     lambda_contract.change_luw_repository_state(repository_change_state_valid).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.get_luw_repository_state(repository_add_valid_1) == "ready")
 
@@ -331,23 +332,12 @@ def test():
     scenario.h4("Changing provider status from incorrect wallet address. Expected exception - Non-matching owner address")
     lambda_contract.set_provider_status(asset_status_invalid_status).run(valid = False, sender = operator_A_address, exception = "Non-matching owner address")
     
-    scenario.h4("Changing provider status of a non-existing provider ID. Expected exception - Non-matching owner address")
+    scenario.h4("Changing provider status of a non-existing provider ID. Expected exception - Provider ID does not exist")
     lambda_contract.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address, exception = "Provider ID does not exist")
 
     # LUW Testing 
 
     scenario.h2("LUW Testing")
-
-    scenario.h3("LUW State Change")
-    
-    scenario.h4("Changing LUW state from incorrect wallet address. Expected exception - Non-matching owner address")
-    lambda_contract.change_luw_state(luw_valid_new_state_record).run(valid = False, sender = operator_B_address, exception = "Non-matching owner address")
-    
-    scenario.h4("Changing LUW state for a non-existing LUW ID. Expected exception - LUW ID does not exist")
-    lambda_contract.change_luw_state(luw_new_state_invalid_luw_id_record).run(valid = False, sender = operator_A_address, exception = "LUW ID does not exist")
-    
-    scenario.h4("Changing LUW state to an invalid state ID. Expected exception - Incorrect state ID")
-    lambda_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address, exception = "Incorrect state ID")
 
     scenario.h3("LUW Repository Management")
 
@@ -368,3 +358,14 @@ def test():
 
     scenario.h4("Changing a LUW Repository state for a non-existing Repository. Expected exception - Repository ID does not exist")
     lambda_contract.change_luw_repository_state(repository_change_state_invalid_repo).run(valid = False, sender = operator_A_address, exception = "Repository ID does not exist")
+
+    scenario.h3("LUW State Change")
+    
+    scenario.h4("Changing LUW state from incorrect wallet address. Expected exception - Non-matching owner address")
+    lambda_contract.change_luw_state(luw_valid_new_state_record).run(valid = False, sender = operator_B_address, exception = "Non-matching owner address")
+    
+    scenario.h4("Changing LUW state for a non-existing LUW ID. Expected exception - LUW ID does not exist")
+    lambda_contract.change_luw_state(luw_new_state_invalid_luw_id_record).run(valid = False, sender = operator_A_address, exception = "LUW ID does not exist")
+    
+    scenario.h4("Changing LUW state to an invalid state ID. Expected exception - Incorrect state ID")
+    lambda_contract.change_luw_state(luw_new_state_invalid_state_id_record).run(valid = False, sender = operator_A_address, exception = "Incorrect state ID")

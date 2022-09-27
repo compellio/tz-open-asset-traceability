@@ -69,65 +69,133 @@ And this is the test result for the failed flow due to existing issuer of the Se
 
 A test was implemented for the following cases:
 
-### assetProvider.py
+### Expected Successful Cases
 
-#### Provider Creation
+#### Asset Provider
 
-**Scenarios**
-|  Scenario |  Outcome  | Failure Reason |
-| ------------ | ------------ | ------------ |
-| Create Asset Provider with ID A | Success | - |
-| Verify Asset Provider creation with UID A | Success | - |
-| Create Asset Provider with ID A | Failure | Asset Provider with Record A already exists |
-| Create Asset Provider with ID B | Success | - |
-| Verify Asset Provider creation with ID B | Success | - |
-
-#### Provider Status Update
+##### Creation
 
 **Scenarios**
-|  Scenario |  Outcome  | Failure Reason |
-| ------------ | ------------ | ------------ |
-| Set Asset Provider with ID A as Deprecated with proper Owner (Operator A) | Success | - |
-| Verify Asset Provider status set to Deprecated | Success | - |
-| Set Asset Provider with ID A as Active with improper Owner (Operator B) | Failure | Improper Owner |
-| Set Asset Provider with ID A to Active Status with proper Owner (Operator A) | Success | - |
-| Verify Asset Provider status set to Active | Success | - |
-| Set Asset Provider with ID A to an improper Status with proper Owner (Operator A) | Failure | Improper Status ID |
-| Set Asset Provider with improper ID to Active Status with proper Owner (Operator A) | Failure | Improper Provider ID |
+|  Scenario |
+| ------------ |
+| Create Asset Provider with ID A |
+| Verify Asset Provider creation with ID A |
+| Create Asset Provider with ID B |
+| Verify Asset Provider creation with ID B |
 
-### assetTwinTracing.py
-
-#### Asset Twin Registration
+##### Management
 
 **Scenarios**
-|  Scenario |  Outcome  | Failure Reason |
-| ------------ | ------------ | ------------ |
-| Register Asset Twin with Hash A and Provider A | Success | - |
-| Verify Asset Twin creation with Hash A | Success | - |
-| Register Asset Twin with Hash A and Provider A | Failure | Asset Provider with Record A already exists |
-| Register Asset Twin with Hash A and Provider B | Success | - |
-| Register Asset Twin with Hash B and Provider A | Success | - |
-| Verify Asset Twin creation with Hash B | Success | - |
-| Verify Failure of fetching an Asset Twin with valid Hash A and invalid Provider | Success | - |
+|  Scenario |
+| ------------ |
+| Change Asset Provider Data with ID A |
+| Verify Asset Provider Data change with ID A |
+| Change Asset Provider Onwer with ID A to ID B |
+| Verify Asset Provider Owner set to ID B |
+| Change Asset Provider Onwer with ID B to ID A |
+| Verify Asset Provider Owner set to ID A |
 
-### LUW.py
-
-#### LUW creation
+##### Status Update
 
 **Scenarios**
-|  Scenario |  Outcome  | Failure Reason |
-| ------------ | ------------ | ------------ |
-| Create LUW | Success | - |
-| Verify LUW Owner | Success | - |
-| Verify LUW State | Success | - |
+|  Scenario |
+| ------------ |
+| Set Asset Provider with ID A as Deprecated with proper Owner (Operator A) |
+| Verify Asset Provider status set to Deprecated |
+| Set Asset Provider with ID A to Active Status with proper Owner (Operator A) |
+| Verify Asset Provider status set to Active |
 
-#### LUW State Change
+#### Asset Twin
+
+##### Registration
 
 **Scenarios**
-|  Scenario |  Outcome  | Failure Reason |
-| ------------ | ------------ | ------------ |
-| Alter LUW State with improper Owner (Operator B) | Failure | Improper Owner |
-| Alter LUW State to "Prepare to Commit" with proper Owner (Operator A) | Success | - |
-| Alter LUW with invalid ID | Failure | LUW ID does not exist |
-| Alter LUW with invalid State ID | Failure | State ID does not exist |
-| Verify LUW State is set to "Prepare to Commit" | Success | - |
+|  Scenario |
+| ------------ |
+| Register Asset Twin with Hash A and Provider A |
+| Verify Asset Twin creation with Hash A |
+| Register Asset Twin with Hash A and Provider B |
+| Register Asset Twin with Hash B and Provider A |
+| Register Asset Twin with Hash A and Provider A |
+| Verify Asset Twin creation with Hash B |
+| Verify Failure of fetching an Asset Twin with valid Hash A and invalid Provider |
+
+#### LUW
+
+##### Creation
+
+**Scenarios**
+|  Scenario |
+| ------------ |
+| Create LUW |
+| Verify LUW Owner |
+| Verify LUW State |
+
+##### Repository Management
+
+**Scenarios**
+|  Scenario |
+| ------------ |
+| Add Reposotory A to LUW A |
+| Add Reposotory B to LUW A |
+| Change Reposotory State A for LUW A to "Ready"|
+| Verify Reposotory State A for LUW A set to "Ready"|
+
+##### State Management
+
+**Scenarios**
+|  Scenario |
+| ------------ |
+| Alter LUW State to "Prepare to Commit" with proper Owner (Operator A) |
+| Verify LUW State is set to "Prepare to Commit" |
+
+### Expected Failed Cases
+
+#### Asset Provider
+
+##### Creation
+
+**Scenarios**
+|  Scenario | Failure Reason |
+| ------------ | ------------ |
+| Adding an existing Provider ID | Provider ID already exists |
+
+##### Management
+
+**Scenarios**
+|  Scenario | Failure Reason |
+| ------------ | ------------ |
+| Changing provider data from incorrect wallet address | Non-matching owner address |
+| Changing provider owner from incorrect wallet address | Non-matching owner address |
+
+##### Status Update
+
+**Scenarios**
+|  Scenario | Failure Reason |
+| ------------ | ------------ |
+| Changing provider to Active status from incorrect wallet address | Non-matching owner address |
+| Changing provider status from incorrect wallet address | Non-matching owner address |
+| Changing provider status of a non-existing provider ID | Provider ID does not exist |
+
+#### LUW
+
+##### Repository Management
+
+**Scenarios**
+|  Scenario | Failure Reason |
+| ------------ | ------------ |
+| Adding a Repository to a non-active LUW | LUW is not Active |
+| Adding a Repository to a LUW from an incorrect wallet address | Non-matching owner address |
+| Changing a LUW Repository state from an incorrect wallet address | Non-matching owner address |
+| Changing a LUW Repository state for a non-existing LUW ID | LUW ID does not exist |
+| Changing a LUW Repository state to an invalid state ID | Incorrect state ID |
+| Changing a LUW Repository state for a non-existing Repository | Repository ID does not exist |
+
+##### State Management
+
+**Scenarios**
+|  Scenario | Failure Reason |
+| ------------ | ------------ |
+| Changing LUW state from incorrect wallet address | Non-matching owner address |
+| Changing LUW state for a non-existing LUW ID | LUW ID does not exist |
+| Changing LUW state to an invalid state ID | Incorrect state ID |

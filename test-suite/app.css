@@ -48,6 +48,10 @@ connection {
     color: #000 !important;
 }
 
+.sim-container .card-list {
+    overflow: auto;
+}
+
 .sim-con-active {
     text-align: center;
     color: #FFF;

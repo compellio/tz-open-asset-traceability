@@ -125,18 +125,18 @@ function showResultAlert(text, link = null, type = "info") {
 
 function showSimResultAlert(text, type = "info", $title = false) {
     let html = ""
-    html += `<div class="w-100 ${$title === true ? 'h3' : 'h6' }">${text}</div>`
+    html += `<div class="w-100 ${$title === true ? 'h3' : 'h6'}">${text}</div>`
 
     $("#alert-sim").attr('class', `alert alert-${type}`);
     $("#alert-sim").html(html)
 }
 
 function appendSimResultAlert(text, $title = false) {
-    var $alert = $('#alert-sim'); 
-    let html = `<div class="w-100 ${$title === true ? 'h3' : 'h6' }">${text}</div>`
+    var $alert = $('#alert-sim');
+    let html = `<div class="w-100 ${$title === true ? 'h3' : 'h6'}">${text}</div>`
 
     $alert.append(html)
-    $alert.animate({scrollTop: $alert.height()}, 1000);
+    $alert.animate({ scrollTop: $alert.height() }, 1000);
 }
 
 function clearAll() {
@@ -618,6 +618,7 @@ function fetch_luw(luw_id, show_alert = true) {
 }
 
 function init_sim() {
+    clearSim()
     $("connection").remove()
     $(".actions-container").html("")
     $("#btn_next_step").hide();
@@ -839,7 +840,7 @@ function luw_initiation() {
                         </div>`
                     )
 
-                    
+
 
                     return delay(500);
                 })
@@ -933,7 +934,7 @@ function persist_proof_residence_address() {
             const accountSettings = readUISettings();
 
             $('.con-att-provider').removeClass("con-active animate__animated")
-            
+
             appendSimResultAlert("The Coordinator contacts the Asset Twin Tracing contract to pass the information and update the LUW");
             $('.con-att-luw').addClass("con-active animate__animated")
 
@@ -946,14 +947,14 @@ function persist_proof_residence_address() {
                 })
                 .then((op) => {
                     appendSimResultAlert(`Identity company repo added <a target="_blank" href="${browser_operations_url + op.hash}">See Operation</a>`);
-                    
+
                     $("#sim-luw .actions-container .card-list").append(
                         `<div id="luw_identity_company_repo" class="d-flex flex-column">
                             <div>identity_company_repo</div>
                             <div class="status">open</div>
                         </div>`
                     )
-                    
+
                     return tezosSim.contract.at(accountSettings.lambdaContractAddress)
                         .then((contract) => {
                             return contract.methods.add_luw_repository(simLuwId, 'utility_company_repo').send();
@@ -1049,7 +1050,7 @@ function KYC_check() {
 function request_additional_info() {
     showSimResultAlert('15. Request additional info', "info", true);
     appendSimResultAlert("The Bank will request some additional info from the Utility company about the Customer's address");
-    
+
     $('#sim-bank').addClass("sim-con-active animate__animated")
     $('#sim-utility').addClass("sim-con-active animate__animated")
 }
@@ -1062,7 +1063,7 @@ function update_proof_address() {
     $('#sim-utility-repo').addClass("sim-con-active animate__animated")
     $('#sim-utility-repo .actions-container').append('<div class="card">Updated Proof of Address</div>')
     jQuery('.sim-container').connections('update');
-    
+
     delay(4000)
         .then(() => {
             appendSimResultAlert('16. Update Proof of Address', true);
@@ -1152,7 +1153,7 @@ function update_repositories() {
                 .then((op) => {
                     appendSimResultAlert(`Identity company repository status changed to "ready" <a target="_blank" href="${browser_operations_url + op.hash}">See Operation</a>`);
                     $("#luw_identity_company_repo .status").html("ready")
-                    
+
                     return tezosSim.contract.at(accountSettings.lambdaContractAddress)
                         .then((contract) => {
                             return contract.methods.change_luw_repository_state(simLuwId, 'utility_company_repo', 2).send();
@@ -1250,5 +1251,9 @@ function disableNextStep() {
     $("#btn_init_sim").addClass("disabled");
     $("#btn_next_step").text("Please Wait...");
 }
+
+$(window).resize(function () {
+    jQuery('.sim-container').connections('update');
+});
 
 $(document).ready(initUI);

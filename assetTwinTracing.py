@@ -61,14 +61,11 @@ class AssetTwinTracing(sp.Contract):
     def fetch_asset_twin(self, parameters):
         sp.set_type(parameters.anchor_hash, sp.TString)
         sp.set_type(parameters.provider_id, sp.TString)
-
-        anchor_hash = parameters.anchor_hash
-        provider_id = parameters.provider_id
         
-        sp.verify(self.data.assets[anchor_hash].contains(provider_id), message = "Hash " + anchor_hash + " does not exist for provider " + provider_id)
+        sp.verify(self.data.assets.contains(parameters.anchor_hash), message = "Hash not found")
+        sp.verify(self.data.assets[parameters.anchor_hash].contains(parameters.provider_id), message = "Hash not found")
         
-        sp.result(self.data.assets[anchor_hash][provider_id])
-
+        sp.result(self.data.assets[parameters.anchor_hash][parameters.provider_id])
 
     @sp.entry_point
     def change_calling_contract_address(self, new_calling_contract_address):

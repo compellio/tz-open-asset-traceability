@@ -24,14 +24,6 @@ class Registry(sp.Contract):
         )
 
     @sp.entry_point
-    def update_contract_address(self, contract, address):
-        # Defining the parameters' types
-        sp.set_type(address, sp.TAddress)
-
-        sp.verify(self.data.certifier == sp.source, message = "Incorrect certifier")
-        self.data.contracts.asset_provider_contract = address
-
-    @sp.entry_point
     def create_asset_provider(self, provider_id, provider_data):
         # Defining the parameters' types
         sp.set_type(provider_id, sp.TString)
@@ -196,24 +188,6 @@ class Registry(sp.Contract):
         # Calling the Logic contract with the parameters we defined
         sp.transfer(params, sp.mutez(0), logic_contract)
 
-    @sp.entry_point
-    def change_at_calling_contract(self):
-        # Only call from certifier is allowed
-        with sp.if_(self.data.certifier != sp.source):
-            sp.failwith("Incorrect certifier")
-
-        # Changes the calling contract address in the asset twin contract
-        contract_data=sp.TAddress
-
-        # Defining the Logic contract itself and its entry point for the call
-        logic_contract = sp.contract(contract_data, self.data.contracts.asset_twin_contract, "change_calling_contract_address").open_some(message="Erron in loading option contract")
-
-        # Defining the parameters that will be passed to the Storage contract
-        params = sp.self_address
-        # Calling the Storage contract with the parameters we defined
-        sp.transfer(params, sp.mutez(0), logic_contract)
-
-
     @sp.onchain_view()
     def fetch_asset_twin(self, parameters):
         # Defining the parameters' types
@@ -231,6 +205,7 @@ class Registry(sp.Contract):
             t = sp.TRecord(
                 asset_repository_endpoint = sp.TString,
                 creator_wallet_address = sp.TAddress,
+                registration_timestamps = sp.TList(sp.TTimestamp),
             )
         ).open_some("Invalid view");
         

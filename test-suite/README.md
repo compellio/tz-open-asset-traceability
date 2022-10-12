@@ -13,6 +13,9 @@ For installation of the Test Suite, you will have to use the latest versions of 
 3. Run `npm install`
 4. Run `npm start`
 
+> **Warning**
+> Running a new version of the test-suite, requires you to clean the cache. You can do so by running `rm -rf .parcel-cache`
+
 If the installation was successful, a localhost URL will appear on the console, for example, http://localhost:1234. Open your browser and enter this URL. If there are no errors you can start testing.
 
 ## Test scenarios

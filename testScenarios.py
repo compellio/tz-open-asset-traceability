@@ -103,7 +103,7 @@ def test():
     # Update calling contract address of the asset twin contract to allow calls from the lambda contract
 
     scenario.h2("Updating asset twin contract with calling contract address")
-    lambda_contract.change_at_calling_contract().run(valid = True, sender = certifier_address)
+    asset_twin_tracing.change_calling_contract_address(lambda_contract.address).run(valid = True, sender = certifier_address)
 
     # Testing 
 
@@ -220,7 +220,6 @@ def test():
     lambda_contract.register_asset_twin(hash_2_provider_1).run(valid = True, sender = operator_B_address)
     lambda_contract.register_asset_twin(hash_1_provider_1).run(valid = True, sender = operator_A_address)
     scenario.verify(lambda_contract.fetch_asset_twin(hash_2_provider_1).creator_wallet_address == operator_B_address)
-    scenario.verify(sp.is_failing(lambda_contract.fetch_asset_twin(hash_1_provider_invalid)))
 
     # LUW Testing 
 
@@ -335,6 +334,12 @@ def test():
     scenario.h4("Changing provider status of a non-existing provider ID. Expected exception - Provider ID does not exist")
     lambda_contract.set_provider_status(asset_status_invalid_provider).run(valid = False, sender = operator_A_address, exception = "Provider ID does not exist")
 
+    # Asset Twin Testing
+    
+    scenario.verify(sp.is_failing(lambda_contract.fetch_asset_twin(hash_1_provider_invalid)))
+    e = sp.catch_exception(lambda_contract.fetch_asset_twin(hash_1_provider_invalid), t = sp.TString)
+    scenario.verify(e == sp.some("Hash not found"))
+    
     # LUW Testing 
 
     scenario.h2("LUW Testing")

@@ -447,6 +447,7 @@ function get_provider(provider_id, show_alert = true) {
 
 function create_luw(provider_id, service_endpoint) {
     const accountSettings = readUISettings();
+    let opHash
 
     if (
         isElementASCII(provider_id) === false
@@ -469,14 +470,13 @@ function create_luw(provider_id, service_endpoint) {
             return op.confirmation(1).then(() => op);
         })
         .then((op) => {
-            (
-                async () => {
-                    let data = await op.transactionOperation();
-                    let luw_id = data.metadata.internal_operation_results[1].result.storage.args[0]["int"] - 1
-                    showResultAlert(`Created new LUW with ID ${luw_id}`, browser_operations_url + op.opHash, "success");
-                    fetch_luw(luw_id, false);
-                }
-            );
+            opHash = op.opHash
+            return op.transactionOperation();
+        })
+        .then((trans) => {
+            let luw_id = trans.metadata.internal_operation_results[1].result.storage.args[1].args[0]["int"] - 1
+            showResultAlert(`Created new LUW with ID ${luw_id}`, browser_operations_url + opHash, "success");
+            fetch_luw(luw_id, false);
         })
         .catch((error) => {
             showResultAlert(error.message, null, "danger");

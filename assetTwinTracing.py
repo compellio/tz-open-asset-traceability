@@ -53,7 +53,7 @@ class AssetTwinTracing(sp.Contract):
                 with sp.modify_record(self.data.assets[anchor_hash][provider_id], "data") as data:
                     data.registration_timestamps = new_timestamps
             sp.else:
-                sp.update_map(self.data.assets[anchor_hash], provider_id, sp.some(tracable_record))
+                self.data.assets[anchor_hash][provider_id] = tracable_record
         sp.else:
             self.data.assets[anchor_hash] = {provider_id : tracable_record}
 

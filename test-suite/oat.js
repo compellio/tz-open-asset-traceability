@@ -8,7 +8,7 @@ const delay = t => new Promise(resolve => setTimeout(resolve, t));
 function initUI() {
     updateUISetting({
         provider: "https://ghostnet.ecadinfra.com",
-        lambdaContractAddress: "KT1ArJ3qzNKCyXcm1fssfW6WVR4pfWBbb83M",
+        lambdaContractAddress: "KT1THfh2ZubSPCDX5ZHGgYXM4bAjud8GptmC",
     });
 
     // setup UI actions

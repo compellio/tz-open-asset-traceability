@@ -1,3 +1,5 @@
 compiled/*
 test/*
 .parcel-cache/*
+.idea/*
+output/*

@@ -1,6 +1,6 @@
 # Tezos Open Asset Traceability
 
-You will need to have a **Wallet** on an existing Tezos Testnet. We have used **Jakartanet** for our tests.
+You will need to have a **Wallet** on an existing Tezos Testnet. We have used **Ghostnet** for our tests.
 
 For implementing the test process, we created a test suite that relies on the [Taquito](https://tezostaquito.io/) library in order to design and perform test calls to smart contracts. Interfacing with the **Wallet** is done through the [Beacon SDK](https://github.com/airgap-it/beacon-sdk).
 
